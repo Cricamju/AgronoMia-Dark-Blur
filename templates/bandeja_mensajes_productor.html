@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Bandeja de Mensajes | AgronoMia</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;700&display=swap');
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+            background: url('{{ url_for("static", filename="images/background-prod.png") }}') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+            color: #f5f5f7;
+        }
+        nav {
+            background: rgba(24, 26, 27, 0.70);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 0 32px;
+        }
+        .nav-left, .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        nav a {
+            color: #f5f5f7;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1em;
+            padding: 10px 18px;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        nav a img {
+            height: 28px;
+            width: 28px;
+            vertical-align: middle;
+        }
+        nav a:hover {
+            background: rgba(255,255,255,0.08);
+            color: #00e6b0;
+        }
+        .panel-blur {
+            background: rgba(24, 26, 27, 0.70);
+            backdrop-filter: blur(10px);
+            border-radius: 26px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+            padding: 48px 48px 38px 48px;
+            margin: 40px auto 40px auto;
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h2 {
+            color: #00e6b0;
+            margin-bottom: 28px;
+            text-align: center;
+            font-size: 2em;
+            font-family: inherit;
+            letter-spacing: 1px;
+            font-weight: 800;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.25);
+        }
+        .mensaje-item {
+            border-bottom: 1px solid #233;
+            padding: 18px 0 16px 0;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+            width: 100%;
+        }
+        .mensaje-info { flex: 1; text-align: left; }
+        .mensaje-info p { margin: 6px 0; }
+        .mensaje-info strong { color: #00e6b0; }
+        .mensaje-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        .responder-btn {
+            background: #00e6b0;
+            color: #181a1b;
+            border: none;
+            padding: 6px 18px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 0;
+            transition: background 0.2s;
+        }
+        .responder-btn:hover { background: #00b88a; color: #fff; }
+        .respuesta-form {
+            margin-top: 10px;
+            background: #232526;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,230,176,0.07);
+        }
+        .respuesta-form textarea {
+            width: 100%;
+            border-radius: 6px;
+            border: 1.5px solid #00e6b0;
+            padding: 8px;
+            font-size: 1em;
+            margin-bottom: 8px;
+            resize: vertical;
+            background: #181a1b;
+            color: #f5f5f7;
+        }
+        .respuesta-form button {
+            background: #FFD700;
+            color: #00b88a;
+            border: none;
+            padding: 6px 18px;
+            border-radius: 7px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .respuesta-form button:hover { background: #FFC107; }
+        .no-mensajes {
+            color: #00e6b0;
+            background: #181a1b;
+            padding: 16px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 18px;
+        }
+        .volver-btn {
+            display: inline-block;
+            margin-top: 24px;
+            background: #00e6b0;
+            color: #181a1b;
+            padding: 8px 22px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.2s, color 0.2s;
+        }
+        .volver-btn:hover { background: #00b88a; color: #fff; }
+        footer {
+            background: rgba(24, 26, 27, 0.70);
+            color: #aaa;
+            text-align: center;
+            padding: 18px 0 10px 0;
+            font-size: 1em;
+            letter-spacing: 1px;
+            margin-top: auto;
+            border-top: 1px solid #222;
+            box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
+            font-family: inherit;
+        }
+        @media (max-width: 1000px) {
+            .panel-blur {
+                max-width: 98vw;
+                padding: 12px 4vw 18px 4vw;
+            }
+            nav {
+                flex-direction: column;
+                height: auto;
+                padding: 10px 5px;
+            }
+            .nav-left, .nav-right {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+    <script>
+        function mostrarRespuestaForm(id) {
+            var form = document.getElementById('respuesta-form-' + id);
+            if (form.style.display === 'none' || form.style.display === '') {
+                form.style.display = 'block';
+            } else {
+                form.style.display = 'none';
+            }
+        }
+    </script>
+</head>
+<body>
+    <nav>
+        <div class="nav-left">
+            <a href="{{ url_for('panel_productor') }}">
+                <img src="{{ url_for('static', filename='images/inicio.png') }}" alt="Panel Productor">
+                Panel Productor
+            </a>
+        </div>
+        <div class="nav-right">
+            <a href="{{ url_for('logout') }}" id="logout-link">
+                <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar Sesión">
+                Cerrar Sesión
+            </a>
+        </div>
+    </nav>
+    <div class="panel-blur">
+        <h2>✉️ Bandeja de Mensajes</h2>
+        {% if mensajes %}
+            {% for mensaje in mensajes %}
+                <div class="mensaje-item">
+                    <div class="mensaje-info">
+                        <p><strong>Mensaje:</strong> {{ mensaje.mensaje }}</p>
+                        {% if mensaje.respuesta %}
+                            <div style="margin-top:8px; background:#232526; padding:8px 12px; border-radius:7px;">
+                                <strong style="color:#00e6b0;">Respuesta del administrador:</strong>
+                                <br>
+                                {{ mensaje.respuesta }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-mensajes">No tienes mensajes aún.</div>
+        {% endif %}
+        <a href="{{ url_for('panel_productor') }}" class="volver-btn">Volver al panel</a>
+    </div>
+    <footer>
+        <p>© 2025 AgronoMia - Todos los derechos reservados</p>
+    </footer>
+
+    <div id="logout-modal-bg" style="display:none;position:fixed;z-index:2000;left:0;top:0;right:0;bottom:0;width:100vw;height:100vh;background:rgba(24,26,27,0.55);backdrop-filter:blur(8px);justify-content:center;align-items:center;transition:background 0.3s;">
+        <div id="logout-modal" style="background:rgba(24,26,27,0.92);border-radius:18px;box-shadow:0 8px 32px rgba(0,0,0,0.28);padding:48px 38px 36px 38px;text-align:center;max-width:370px;width:90vw;color:#f5f5f7;">
+            <h2 style="color:#00e6b0;font-size:2em;margin-bottom:18px;font-weight:800;letter-spacing:1px;">¿Cerrar sesión?</h2>
+            <p style="font-size:1.15em;margin-bottom:32px;color:#e0f7fa;">¿Estás seguro de que deseas cerrar tu sesión?<br>Puedes continuar navegando si lo prefieres.</p>
+            <div style="display:flex;justify-content:center;gap:22px;">
+                <form id="logout-form" action="{{ url_for('logout') }}" method="get" style="display:inline;">
+                    <button type="submit" class="modal-btn confirm" style="background:#00e6b0;color:#181a1b;font-weight:600;border:none;border-radius:8px;padding:12px 18px;font-size:1em;box-shadow:0 2px 10px rgba(0,230,176,0.10);transition:background 0.2s,color 0.2s,transform 0.15s;cursor:pointer;">Sí, cerrar sesión</button>
+                </form>
+                <button class="modal-btn cancel" onclick="cerrarLogoutModal()" style="background:#232526;color:#e0e0e0;border:1.5px solid #444;border-radius:8px;padding:12px 18px;font-size:1em;font-weight:600;cursor:pointer;transition:background 0.2s,color 0.2s,transform 0.15s;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function abrirLogoutModal() {
+            document.getElementById('logout-modal-bg').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        function cerrarLogoutModal() {
+            document.getElementById('logout-modal-bg').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoutLink = document.getElementById('logout-link');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    abrirLogoutModal();
+                });
+            }
+            // Cerrar modal con ESC
+            document.addEventListener('keydown', function(e) {
+                if (e.key === "Escape") cerrarLogoutModal();
+            });
+        });
+    </script>
+</body>
+</html>

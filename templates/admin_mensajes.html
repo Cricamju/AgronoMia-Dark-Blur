@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mensajes de Usuarios | AgronoMia</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: url('{{ url_for("static", filename="images/ap5.jpg") }}') no-repeat center center fixed;
+            background-size: cover;
+        }
+        nav {
+            background-color: #2E7D32;
+            padding: 18px 0;
+            text-align: center;
+            box-shadow: 0px 4px 8px rgba(0,0,0,0.18);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+            letter-spacing: 1px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 16px;
+            padding: 35px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+        }
+        h2 { color: #2E7D32; margin-bottom: 28px; }
+        .mensaje-item { 
+            border-bottom: 1px solid #e0e0e0; 
+            padding: 18px 0 16px 0; 
+            display: flex; 
+            align-items: flex-start; 
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .mensaje-info {
+            flex: 1;
+            text-align: left;
+        }
+        .mensaje-info p { margin: 6px 0; }
+        .mensaje-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        .eliminar-btn, .responder-btn {
+            background: #D32F2F;
+            color: white;
+            border: none;
+            padding: 6px 18px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .eliminar-btn:hover { background: #b71c1c; }
+        .responder-btn {
+            background: #2E7D32;
+            margin-top: 0;
+        }
+        .responder-btn:hover { background: #388e3c; }
+        .respuesta-form {
+            margin-top: 10px;
+            background: #f1f8e9;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(46,125,50,0.07);
+        }
+        .respuesta-form textarea {
+            width: 100%;
+            border-radius: 6px;
+            border: 1px solid #2E7D32;
+            padding: 8px;
+            font-size: 1em;
+            margin-bottom: 8px;
+            resize: vertical;
+        }
+        .respuesta-form button {
+            background: #FFD700;
+            color: #2E7D32;
+            border: none;
+            padding: 6px 18px;
+            border-radius: 7px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .respuesta-form button:hover {
+            background: #FFC107;
+        }
+        .no-mensajes {
+            color: #2E7D32;
+            background: #f1f8e9;
+            padding: 16px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .volver-btn {
+            display: inline-block;
+            margin-top: 24px;
+            background: #2E7D32;
+            color: white;
+            padding: 8px 22px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .volver-btn:hover { background: #388e3c; }
+        footer {
+            background-color: #2E7D32;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin-top: auto;
+            border-radius: 0;
+            font-family: inherit;
+        }
+    </style>
+    <script>
+        function mostrarRespuestaForm(id) {
+            var form = document.getElementById('respuesta-form-' + id);
+            if (form.style.display === 'none' || form.style.display === '') {
+                form.style.display = 'block';
+            } else {
+                form.style.display = 'none';
+            }
+        }
+    </script>
+</head>
+<body>
+    <nav>
+        Mensajes AgronoMia
+    </nav>
+    <div class="container">
+        <h2>✉️ Mensajes de Usuarios</h2>
+        {% if mensajes %}
+            {% for mensaje in mensajes %}
+                <div class="mensaje-item">
+                    <div class="mensaje-info">
+                        <p><strong>Usuario ID:</strong> {{ mensaje.usuario_id }}</p>
+                        <p><strong>Mensaje:</strong> {{ mensaje.mensaje }}</p>
+                        {% if mensaje.respuesta %}
+                            <div style="margin-top:8px; background:#e3f2fd; padding:8px 12px; border-radius:7px;">
+                                <strong>Respuesta enviada:</strong>
+                                <br>
+                                {{ mensaje.respuesta }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="mensaje-actions">
+                        <form action="{{ url_for('eliminar_mensaje', mensaje_id=mensaje.id) }}" method="post" style="margin-bottom:0;">
+                            <button type="submit" class="eliminar-btn">Eliminar</button>
+                        </form>
+                        <button class="responder-btn" onclick="mostrarRespuestaForm({{ mensaje.id }})" type="button">Responder</button>
+                        <form id="respuesta-form-{{ mensaje.id }}" class="respuesta-form" action="{{ url_for('responder_mensaje', mensaje_id=mensaje.id) }}" method="post" style="display:none;">
+                            <textarea name="respuesta" rows="3" placeholder="Escribe tu respuesta aquí..." required></textarea>
+                            <button type="submit">Enviar Respuesta</button>
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <div class="no-mensajes">No hay mensajes para mostrar.</div>
+        {% endif %}
+        <a href="{{ url_for('panel_admin') }}" class="volver-btn">Volver al panel</a>
+    </div>
+    <footer>
+        <p>© 2025 AgronoMia - Todos los derechos reservados</p>
+    </footer>
+</body>
+</html>

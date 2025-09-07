@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrador | AgronoMia</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: Arial, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: url('{{ url_for("static", filename="images/verduras.jpg") }}') no-repeat center center fixed;
+            background-size: cover;
+            text-align: center;
+        }
+        nav {
+            background-color: #2E7D32;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        .nav-left, .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 12px 18px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-size: 1em;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        nav a img {
+            height: 32px;
+            width: 32px;
+            vertical-align: middle;
+        }
+        nav a:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: #FFD700;
+        }
+        .container {
+            max-width: 900px;
+            margin: 120px auto 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+            flex: 1;
+            font-family: inherit;
+        }
+        .panel-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 20px;
+        }
+        .usuarios, .pedidos, .productos, .mensajes {
+            flex: 1 1 220px;
+            min-width: 260px;
+            max-width: 300px;
+            min-height: 250px;
+            padding: 25px 18px 30px 18px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0px 5px 12px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            transition: all 0.3s;
+            margin-top: 0;
+            font-family: inherit;
+           display: flex;
+           flex-direction: column;
+           justify-content: space-between;
+        }
+        
+        .usuarios:hover, .pedidos:hover, .productos:hover, .mensajes:hover {
+          transform: scale(1.05);
+          box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
+           }
+        button {
+            padding: 12px 18px;
+            border: none;
+            background-color: #FFD700;
+            color: black;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        button:hover {
+            background-color: #FFC107;
+            transform: scale(1.05);
+            box-shadow: 0px 3px 10px rgba(255, 215, 0, 0.6);
+        }
+        footer {
+            background-color: #2E7D32;
+            color: white;
+            text-align: center;
+            padding: 18px 0;
+            margin-top: auto;
+            border-radius: 0;
+            font-family: inherit;
+            font-size: 1em;
+            letter-spacing: 0.5px;
+        }
+        @media (max-width: 1000px) {
+            .container {
+                max-width: 98vw;
+                margin: 110px 1vw 20px 1vw;
+                padding: 10px;
+            }
+            .panel-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .usuarios, .pedidos, .productos, .mensajes {
+                max-width: 98vw;
+                min-width: 90vw;
+                margin-bottom: 18px;
+            }
+        }
+        @media (max-width: 600px) {
+            nav {
+                flex-direction: column;
+                padding: 10px 5px;
+            }
+            .nav-left, .nav-right {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .container {
+                margin: 90px 1vw 20px 1vw;
+                padding: 5px;
+            }
+        }
+      .dashboard {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 30px;
+    gap: 20px;
+}
+.card {
+    background: #f1f8e9;
+    border-radius: 12px;
+    padding: 18px 0;
+    width: 150px;
+    font-size: 1.2em;
+    color: #2E7D32;
+    box-shadow: 0 2px 8px rgba(46,125,50,0.07);
+    font-weight: bold;
+}  
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-left">
+            {% if mensajes_pendientes > 0 %}
+                <span style="background:#FFD700;color:#2E7D32;padding:6px 16px;border-radius:8px;font-weight:bold;margin-right:15px;box-shadow:0 2px 8px rgba(46,125,50,0.07);">
+                    ✉️ {{ mensajes_pendientes }} mensaje{{ mensajes_pendientes != 1 and 's' or '' }} pendiente{{ mensajes_pendientes != 1 and 's' or '' }}
+                </span>
+            {% endif %}
+            {% if pedidos_activos > 0 %}
+                <span style="background:#e3f2fd;color:#1565c0;padding:6px 16px;border-radius:8px;font-weight:bold;margin-right:15px;box-shadow:0 2px 8px rgba(21,101,192,0.07);">
+                    📦 {{ pedidos_activos }} pedido{{ pedidos_activos != 1 and 's' or '' }} activo{{ pedidos_activos != 1 and 's' or '' }}
+                </span>
+            {% endif %}
+        </div>
+        <div class="nav-right">
+            <a href="{{ url_for('logout') }}">
+                <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar Sesión">Cerrar Sesión
+            </a>
+        </div>
+    </nav>
+    <div class="container">
+        <h2>⚙️ Panel de Administración</h2>
+        <div style="margin-bottom: 24px; display: flex; gap: 16px; justify-content: center; flex-wrap: wrap;">
+            <a href="{{ url_for('exportar_reporte', tipo='usuarios') }}"
+               style="background:#2E7D32;color:white;padding:8px 18px;border-radius:8px;font-weight:bold;border:none;cursor:pointer;text-decoration:none;display:inline-block;">
+                Descargar Usuarios (Excel)
+           </a>
+            <a href="{{ url_for('exportar_reporte', tipo='pedidos') }}"
+               style="background:#1565c0;color:white;padding:8px 18px;border-radius:8px;font-weight:bold;border:none;cursor:pointer;text-decoration:none;display:inline-block;">
+                Descargar Pedidos (Excel)
+            </a>
+            <a href="{{ url_for('exportar_reporte', tipo='productos') }}"
+               style="background:#FFD700;color:#2E7D32;padding:8px 18px;border-radius:8px;font-weight:bold;border:none;cursor:pointer;text-decoration:none;display:inline-block;">
+                Descargar Productos (Excel)
+            </a>
+        </div>
+        <div style="margin-bottom: 30px; display: flex; flex-wrap: wrap; gap: 18px; justify-content: center;">
+    <form action="{{ url_for('panel_admin') }}" method="get" style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <input type="text" name="q" placeholder="Buscar usuarios, pedidos o productos..." value="{{ q }}" style="padding:8px 14px; border-radius:8px; border:1.5px solid #2E7D32; font-size:1em; min-width:220px;">
+        <select name="filtro" style="padding:8px 14px; border-radius:8px; border:1.5px solid #2E7D32; font-size:1em;">
+            <option value="usuarios" {% if filtro == "usuarios" %}selected{% endif %}>Usuarios</option>
+            <option value="pedidos" {% if filtro == "pedidos" %}selected{% endif %}>Pedidos</option>
+            <option value="productos" {% if filtro == "productos" %}selected{% endif %}>Productos</option>
+        </select>
+        <button type="submit" style="background:#FFD700;color:#2E7D32;padding:8px 18px;border-radius:8px;font-weight:bold;border:none;cursor:pointer;">Buscar</button>
+    </form>
+</div>
+
+{% if resultados is defined and resultados %}
+<div style="margin: 30px auto; max-width: 800px; background: #fffde7; border-radius: 12px; padding: 18px 28px; box-shadow: 0 2px 8px rgba(46,125,50,0.07);">
+    <h3 style="color:#2E7D32;">🔎 Resultados de la búsqueda</h3>
+    <ul style="text-align:left; color:#333; font-size:1em;">
+        {% for r in resultados %}
+            {% if filtro == "usuarios" or (not filtro and r.__class__.__name__ == "Usuario") %}
+                <li>👤 <b>{{ r.nombre }}</b> ({{ r.email }}) - Rol: {{ r.tipo_usuario }}</li>
+            {% elif filtro == "pedidos" or (not filtro and r.__class__.__name__ == "Pedido") %}
+                <li>📦 Pedido #{{ r.id }} - Usuario: {{ r.usuario_id }} - Estado: {{ r.estado }} - Fecha: {{ r.fecha.strftime('%d/%m/%Y %H:%M') }}</li>
+            {% elif filtro == "productos" or (not filtro and r.__class__.__name__ == "Producto") %}
+                <li>🛒 <b>{{ r.nombre }}</b> - Precio: ${{ r.precio }} - Productor: {{ r.productor_id }}</li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>
+{% elif resultados is defined and q %}
+<div style="margin: 30px auto; max-width: 800px; background: #fffde7; border-radius: 12px; padding: 18px 28px; box-shadow: 0 2px 8px rgba(46,125,50,0.07);">
+    <h4 style="color:#c62828;">No se encontraron resultados.</h4>
+</div>
+{% endif %}
+        <div class="dashboard">
+            <div class="card">👥 <br><b>{{ total_usuarios }}</b><br>Usuarios</div>
+            <div class="card">📦 <br><b>{{ pedidos_activos }}</b><br>Pedidos Activos</div>
+            <div class="card">🛒 <br><b>{{ total_productos }}</b><br>Productos</div>
+            <div class="card">✉️ <br><b>{{ mensajes_pendientes }}</b><br>Mensajes Pendientes</div>
+       </div>
+        <div class="panel-container">
+            <div class="usuarios">
+                <h3>👥 Gestión de Usuarios</h3>
+                <p>Control de clientes y productores.</p>
+                <button onclick="window.location.href='{{ url_for('gestion_usuarios') }}'">Administrar Usuarios</button>
+                <button onclick="window.location.href='{{ url_for('agregar_usuario') }}'" style="margin-top:10px;background:#2E7D32;color:white;">Agregar Usuario</button>
+            </div>
+            <div class="pedidos">
+                <h3>📦 Administración de Pedidos</h3>
+                <p>Lista y control de todos los pedidos activos.</p>
+                <button onclick="window.location.href='{{ url_for('admin_pedidos') }}'">Ver Pedidos</button>
+                <button onclick="window.location.href='{{ url_for('admin_pedidos') }}'" style="margin-top:10px;background:#2E7D32;color:white;">Ver Estatus de Pedidos</button>
+            </div>
+            <div class="productos">
+                <h3>🛒 Supervisión de Productos</h3>
+                <p>Revisión de productos en la plataforma.</p>
+                <button onclick="window.location.href='{{ url_for('admin_productos') }}'">Ver Productos</button>
+            </div>
+            <div class="mensajes">
+                <h3>✉️ Mensajes de Usuarios</h3>
+                <p>Consulta y elimina mensajes enviados por clientes y productores.</p>
+                <button onclick="window.location.href='{{ url_for('admin_mensajes') }}'">Ver Mensajes</button>
+            </div>
+        </div>
+    </div>
+    
+
+
+    <footer>
+        <p>© 2025 AgronoMia - Todos los derechos reservados</p>
+    </footer>
+</body>
+</html>

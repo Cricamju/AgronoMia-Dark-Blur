@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Ticket Transferencia | AgronoMia</title>
+</head>
+<body>
+    <h2>Ticket de Transferencia Bancaria</h2>
+    <p><strong>Pedido #:</strong> {{ pedido.id }}</p>
+    <p><strong>Propietario:</strong> {{ propietario }}</p>
+    <p><strong>Número de tarjeta:</strong> {{ numero_tarjeta }}</p>
+    <table>
+        <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Subtotal</th>
+        </tr>
+        {% for producto in productos %}
+        <tr>
+            <td>{{ producto.nombre }}</td>
+            <td>{{ producto.cantidad }}</td>
+            <td>${{ producto.precio * producto.cantidad }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="2"><strong>Total:</strong></td>
+            <td><strong>${{ total }}</strong></td>
+        </tr>
+    </table>
+    <p>Gracias por tu compra.</p>
+</body>
+</html>

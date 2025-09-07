@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgronoMia - Productos</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('{{ url_for("static", filename="images/background.jpg") }}') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            color: #f5f5f7;
+        }
+
+        nav {
+            background: rgba(24, 26, 27, 0.65);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 0 32px;
+        }
+
+        .nav-left, .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+
+        nav a {
+            color: #f5f5f7;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 10px 18px;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        nav a img {
+            height: 28px;
+            width: 28px;
+            vertical-align: middle;
+        }
+
+        nav a:hover {
+            background: rgba(255,255,255,0.08);
+            color: #00e6b0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            background: rgba(24, 26, 27, 0.65);
+            backdrop-filter: blur(10px);
+            padding: 32px 40px;
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+            text-align: center;
+            border: 1.5px solid rgba(0,230,176,0.13);
+        }
+
+        .productos-lista {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            justify-content: center;
+        }
+
+        .producto-item {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            width: 250px;
+            min-height: 350px;
+            padding: 18px 14px 16px 14px;
+            background: rgba(24, 26, 27, 0.82);
+            backdrop-filter: blur(8px);
+            border-radius: 14px;
+            box-shadow: 0px 4px 18px rgba(0,0,0,0.18);
+            text-align: center;
+            border: 1px solid rgba(0,230,176,0.10);
+        }
+
+        .producto-item img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .producto-item p, .producto-item strong {
+            color: #f5f5f7;
+            font-size: 1.07em;
+            margin: 6px 0;
+        }
+
+        .producto-item strong {
+            color: #00e6b0;
+            font-weight: 700;
+        }
+
+        h2, h3 {
+            color: #00e6b0;
+            margin-bottom: 18px;
+            letter-spacing: 1px;
+        }
+
+        .boton-carrito {
+            background-color: #2E7D32;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+            margin-top: auto;
+        }
+        .boton-carrito:hover {
+            background-color: #1B5E20;
+            transform: scale(1.05);
+        }
+
+        footer {
+            background: rgba(24, 26, 27, 0.65);
+    backdrop-filter: blur(10px);
+    color: #aaa;
+    text-align: center;
+    padding: 18px 0 10px 0;
+    font-size: 1em;
+    letter-spacing: 1px;
+    margin-top: 40px;
+    border-top: 1px solid #222;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
+        }
+
+#toast-container {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+.toast {
+  min-width: 220px;
+  padding: 16px 28px;
+  border-radius: 12px;
+  color: #00e6b0;
+  font-size: 1.1em;
+  font-weight: 500;
+  background: rgba(24, 26, 27, 0.85);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+  margin-bottom: 8px;
+  opacity: 0.97;
+  animation: fadeInOut 3s forwards;
+  border-left: 6px solid #00e6b0;
+}
+.toast-success {
+  border-left: 6px solid #00e6b0;
+}
+.toast-error {
+  border-left: 6px solid #e6004c;
+}
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(40px);}
+  10% { opacity: 1; transform: translateY(0);}
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(40px);}
+}
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div id="toast-container">
+          {% for category, message in messages %}
+            <div class="toast toast-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <nav>
+        <div class="nav-left">
+            <a href="{{ url_for('inicio') }}">
+                <img src="{{ url_for('static', filename='images/inicio.png') }}" alt="Inicio">Inicio
+            </a>
+            <a href="{{ url_for('productores') }}">
+                <img src="{{ url_for('static', filename='images/productor.png') }}" alt="Productores">Productores
+            </a>
+            <a href="{{ url_for('contacto') }}">
+                <img src="{{ url_for('static', filename='images/contacto.png') }}" alt="Contacto">Contacto
+            </a>
+        </div>
+        <div class="nav-right">
+            <a href="{{ url_for('carrito') }}">
+                <img src="{{ url_for('static', filename='images/carrito.png') }}" alt="Carrito">Carrito
+                {% if cantidad_carrito and cantidad_carrito > 0 %}
+                    <span style="background:#00e6b0;color:#181a1b;padding:2px 8px;border-radius:12px;font-weight:bold;margin-left:4px;">
+                        {{ cantidad_carrito }}
+                    </span>
+                {% endif %}
+            </a>
+            <a href="{{ url_for('panel_cliente') }}">
+                <img src="{{ url_for('static', filename='images/perfil.png') }}" alt="Mi Cuenta">Mi Cuenta
+            </a>
+            <a href="#" id="logout-link">
+                <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar">Cerrar Sesión
+            </a>
+        </div>
+    </nav>
+
+<style>
+#logout-modal-bg {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0; top: 0; right: 0; bottom: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(24, 26, 27, 0.55);
+    backdrop-filter: blur(8px);
+    justify-content: center;
+    align-items: center;
+    transition: background 0.3s;
+}
+#logout-modal-bg.active {
+    display: flex;
+}
+#logout-modal {
+    background: rgba(24, 26, 27, 0.92);
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+    padding: 48px 38px 36px 38px;
+    text-align: center;
+    max-width: 370px;
+    width: 90vw;
+    color: #f5f5f7;
+    animation: fadeInModal 0.4s;
+}
+#logout-modal h2 {
+    color: #00e6b0;
+    font-size: 2em;
+    margin-bottom: 18px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+#logout-modal p {
+    font-size: 1.15em;
+    margin-bottom: 32px;
+    color: #e0f7fa;
+}
+#logout-modal .modal-btns {
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+}
+#logout-modal .modal-btn {
+    padding: 12px 32px;
+    border-radius: 8px;
+    border: none;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, transform 0.15s;
+}
+#logout-modal .modal-btn.confirm {
+    background: #00e6b0;
+    color: #181a1b;
+}
+#logout-modal .modal-btn.confirm:hover {
+    background: #00b88a;
+    color: #fff;
+    transform: scale(1.04);
+}
+#logout-modal .modal-btn.cancel {
+    background: #232526;
+    color: #e0e0e0;
+    border: 1.5px solid #444;
+}
+#logout-modal .modal-btn.cancel:hover {
+    background: #181a1b;
+    color: #00e6b0;
+    transform: scale(1.04);
+}
+@keyframes fadeInModal {
+    from { opacity: 0; transform: scale(0.97);}
+    to { opacity: 1; transform: scale(1);}
+}
+</style>
+<div id="logout-modal-bg">
+    <div id="logout-modal">
+        <h2>¿Cerrar sesión?</h2>
+        <p>¿Estás seguro de que deseas cerrar tu sesión?<br>Puedes continuar navegando si lo prefieres.</p>
+        <div class="modal-btns">
+            <form id="logout-form" action="{{ url_for('logout') }}" method="get" style="display:inline;">
+                <button type="submit" class="modal-btn confirm">Sí, cerrar sesión</button>
+            </form>
+            <button class="modal-btn cancel" onclick="cerrarLogoutModal()">Cancelar</button>
+        </div>
+    </div>
+</div>
+<script>
+function abrirLogoutModal() {
+    document.getElementById('logout-modal-bg').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+function cerrarLogoutModal() {
+    document.getElementById('logout-modal-bg').classList.remove('active');
+    document.body.style.overflow = '';
+}
+document.addEventListener('DOMContentLoaded', function() {
+    const logoutLink = document.getElementById('logout-link');
+    if (logoutLink) {
+        logoutLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            abrirLogoutModal();
+        });
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === "Escape") cerrarLogoutModal();
+    });
+});
+</script>
+
+    <div class="container">
+        <h2>🌿 Productos por Categoría</h2>
+
+        {% for categoria in categorias %}
+            <h3>{{ categoria.nombre }}</h3>
+            <div class="productos-lista">
+                {% for producto in productos %}
+                    {% if producto.categoria_id == categoria.id %}
+                        <div class="producto-item">
+                            <img src="{{ url_for('static', filename='images/' + producto.imagen) }}" alt="{{ producto.nombre }}">
+                            <p><strong>{{ producto.nombre }}</strong></p>
+                            <p>Descripción: {{ producto.descripcion }}</p>
+                            <p>Precio: ${{ producto.precio }}</p>
+                            <p>Productor: {{ producto.productor.nombre }}</p>
+
+                            <form action="{{ url_for('agregar_carrito', producto_id=producto.id) }}" method="POST">
+                                <button class="boton-carrito" type="submit">🛒 Agregar al carrito</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <footer>
+        <p>© 2025 AgronoMia - Todos los derechos reservados</p>
+    </footer>
+
+    <script>
+  setTimeout(() => {
+    const toast = document.getElementById('toast-container');
+    if (toast) toast.remove();
+  }, 3000);
+</script>
+</body>
+</html>

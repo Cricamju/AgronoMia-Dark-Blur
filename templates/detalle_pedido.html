@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Detalle del Pedido | AgronoMia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: url('{{ url_for("static", filename="images/verduras.jpg") }}') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        nav {
+            background-color: #2E7D32;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .nav-left, .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 25px; 
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 12px 18px;
+            border-radius: 8px;
+            transition: all 0.3s ease-in-out;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        nav a img {
+            height: 32px;
+            width: 32px;
+            vertical-align: middle;
+        }
+        nav a:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: #FFD700;
+        }
+        .container {
+            max-width: 700px;
+            margin: 60px auto 40px auto;
+            background: rgba(255,255,255,0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0px 5px 20px rgba(0,0,0,0.25);
+            text-align: center;
+        }
+        h2 {
+            color: #2E7D32;
+            margin-bottom: 25px;
+        }
+        .pedido-info {
+            margin-bottom: 18px;
+            text-align: left;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 18px;
+            background: white;
+        }
+        th, td {
+            padding: 12px 8px;
+            border: 1px solid #bbb;
+        }
+        th {
+            background-color: #2E7D32;
+            color: white;
+        }
+        .total-row td {
+            font-size: 1.2em;
+            font-weight: bold;
+            background: #F9FBE7;
+        }
+        .volver {
+            display: inline-block;
+            background-color: #FFD700;
+            color: #2E7D32;
+            font-weight: bold;
+            padding: 10px 22px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin-top: 18px;
+            transition: background 0.3s;
+        }
+        .volver:hover {
+            background-color: #FFC107;
+            color: #1B5E20;
+        }
+        footer {
+            background-color: #2E7D32;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin-top: auto;
+        }
+        @media (max-width: 800px) {
+            .container {
+                max-width: 98vw;
+                margin: 70px 1vw 40px 1vw;
+                padding: 10px;
+            }
+            table, th, td {
+                font-size: 0.95em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-left">
+            <a href="{{ url_for('inicio') }}">
+                <img src="{{ url_for('static', filename='images/inicio.png') }}" alt="Inicio">Inicio
+            </a>
+            <a href="{{ url_for('productos') }}">
+                <img src="{{ url_for('static', filename='images/mercado.png') }}" alt="Mercado">Mercado
+            </a>
+        </div>
+        <div class="nav-right">
+            {% if session['usuario_id'] %}
+                <a href="{{ url_for('carrito') }}">
+                    <img src="{{ url_for('static', filename='images/carrito.png') }}" alt="Carrito">Carrito
+                    {% if cantidad_carrito and cantidad_carrito > 0 %}
+                        <span style="background:#FFD700;color:#2E7D32;padding:2px 8px;border-radius:12px;font-weight:bold;margin-left:4px;">
+                            {{ cantidad_carrito }}
+                        </span>
+                    {% endif %}
+                </a>
+                <a href="{{ url_for('pedidos_cliente') }}">
+                    <img src="{{ url_for('static', filename='images/misp.png') }}" alt="Mis Pedidos">Mis Pedidos
+                </a>
+                <a href="{{ url_for('panel_cliente') }}">
+                    <img src="{{ url_for('static', filename='images/perfil.png')}}" alt="Mi Cuenta">Mi Cuenta
+                </a>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="container">
+        <h2>📦 Detalle del Pedido</h2>
+        <div class="pedido-info">
+            <p><strong>ID del pedido:</strong> {{ pedido.id }}</p>
+            <p><strong>Fecha:</strong> {{ pedido.fecha.strftime('%d/%m/%Y %H:%M') }}</p>
+            <p><strong>Total:</strong> ${{ pedido.total }}</p>
+            <p><strong>Estado:</strong> {{ pedido.estado }}</p>
+        </div>
+        
+        {# 
+        <table>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio unitario</th>
+                <th>Subtotal</th>
+            </tr>
+            {% for producto in pedido.productos %}
+            <tr>
+                <td>{{ producto.nombre }}</td>
+                <td>{{ producto.cantidad }}</td>
+                <td>${{ producto.precio }}</td>
+                <td>${{ producto.precio * producto.cantidad }}</td>
+            </tr>
+            {% endfor %}
+            <tr class="total-row">
+                <td colspan="3" align="right">Total:</td>
+                <td>${{ pedido.total }}</td>
+            </tr>
+        </table>
+        #}
+        <a href="{{ url_for('pedidos_cliente') }}" class="volver">Volver a Mis Pedidos</a>
+    </div>
+    <footer>
+        <p>© 2025 AgronoMia - Todos los derechos reservados</p>
+    </footer>
+</body>
+</html>

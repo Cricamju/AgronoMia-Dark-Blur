@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carrito de Compras | AgronoMia</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: url('{{ url_for("static", filename="images/background.jpg") }}') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            color: #f5f5f7;
+            display: flex;
+            flex-direction: column;
+        }
+        nav {
+    background: rgba(24, 26, 27, 0.65);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 70px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 0 32px;
+}
+.nav-left, .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+nav a {
+    color: #f5f5f7;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 10px 18px;
+    border-radius: 8px;
+    transition: background 0.2s, color 0.2s;
+    font-size: 1.1em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.5px;
+}
+nav a img {
+    height: 28px;
+    width: 28px;
+    vertical-align: middle;
+}
+nav a:hover {
+    background: rgba(255,255,255,0.08);
+    color: #00e6b0;
+}
+        .container {
+            max-width: 1400px; 
+            margin: 110px auto 40px auto;
+            background: rgba(24, 26, 27, 0.65); 
+            backdrop-filter: blur(10px);
+            padding: 40px 70px;
+            border-radius: 22px;
+            box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.25);
+            text-align: center;
+            border: 1.5px solid rgba(0,230,176,0.13);
+            flex: 1 0 auto;
+            transition: max-width 0.3s, padding 0.3s;
+        }
+        h2 {
+            color: #00e6b0;
+            margin-bottom: 25px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.45);
+        }
+        .mensaje-carrito {
+            font-size: 1.2em;
+            color: #D32F2F;
+            margin-top: 40px;
+        }
+        .carrito-lista {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .carrito-item {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            padding: 18px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            background: rgba(24, 26, 27, 0.82); 
+            border-radius: 10px;
+            margin-bottom: 10px;
+            color: #f5f5f7;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.18);
+        }
+        .carrito-item img {
+            width: 120px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(46,125,50,0.08);
+        }
+        .carrito-detalle {
+            flex: 1;
+            text-align: left;
+        }
+        .carrito-detalle p {
+            margin: 6px 0;
+            font-size: 1.08em;
+        }
+        .carrito-detalle strong {
+            color: #f5f5f7;
+        }
+        .total {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-top: 25px;
+            color: #00e6b0;
+        }
+        .pagar {
+            display: inline-block;
+            background-color: #2E7D32;      
+            color: #fff;                   
+            font-size: 1.15em;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 18px;
+            transition: background 0.3s, color 0.3s, transform 0.2s;
+            border: none;
+        }
+        .pagar:hover {
+            background-color: #1B5E20;      
+            color: #00e6b0;                
+            transform: scale(1.05);
+            box-shadow: 0px 4px 12px rgba(46, 125, 50, 0.25);
+        }
+        footer {
+            background: rgba(24, 26, 27, 0.65);
+    backdrop-filter: blur(10px);
+    color: #aaa;
+    text-align: center;
+    padding: 18px 0 10px 0;
+    font-size: 1em;
+    letter-spacing: 1px;
+    margin-top: auto;
+    border-top: 1px solid #222;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
+    position: static;
+        }
+        #toast-container {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            z-index: 1050;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 12px;
+        }
+        .toast {
+            min-width: 220px;
+            padding: 16px 28px;
+            border-radius: 12px;
+            color: #00e6b0;
+            font-size: 1.1em;
+            font-weight: 500;
+            background: rgba(24, 26, 27, 0.85);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+            margin-bottom: 8px;
+            opacity: 0.97;
+            animation: fadeInOut 3s forwards;
+            border-left: 6px solid #00e6b0;
+        }
+        .toast-success {
+            border-left: 6px solid #00e6b0;
+        }
+        .toast-error {
+            border-left: 6px solid #e6004c;
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(40px);}
+            10% { opacity: 1; transform: translateY(0);}
+            90% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(40px);}
+        }
+        @media (max-width: 900px) {
+            .container {
+                max-width: 98vw;
+                margin: 110px 1vw 60px 1vw;
+            }
+            .carrito-item img {
+                width: 80px;
+            }
+        }
+        @media (max-width: 600px) {
+            nav {
+                flex-direction: column;
+                height: auto;
+                padding: 10px 5px;
+            }
+            .nav-left, .nav-right {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .container {
+                margin-top: 120px;
+                margin-bottom: 80px;
+                padding: 10px;
+            }
+            .carrito-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+            .carrito-item img {
+                width: 100%;
+                max-width: 200px;
+            }
+        }
+        @media (max-width: 1500px) {
+    .container {
+        max-width: 98vw;
+        padding: 24px 4vw 18px 4vw;
+    }
+}
+#logout-modal-bg {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0; top: 0; right: 0; bottom: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(24, 26, 27, 0.55);
+    backdrop-filter: blur(8px);
+    justify-content: center;
+    align-items: center;
+    transition: background 0.3s;
+}
+#logout-modal-bg.active {
+    display: flex;
+}
+#logout-modal {
+    background: rgba(24, 26, 27, 0.92);
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+    padding: 48px 48px 36px 48px;
+    text-align: center;
+    max-width: 420px;
+    width: 95vw;
+    color: #f5f5f7;
+    animation: fadeInModal 0.4s;
+}
+#logout-modal h2 {
+    color: #00e6b0;
+    font-size: 2em;
+    margin-bottom: 18px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+#logout-modal p {
+    font-size: 1.15em;
+    margin-bottom: 32px;
+    color: #e0f7fa;
+}
+#logout-modal .modal-btns {
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+}
+#logout-modal .modal-btn {
+    padding: 12px 32px;
+    border-radius: 8px;
+    border: none;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, transform 0.15s;
+}
+#logout-modal .modal-btn.confirm {
+    background: #00e6b0;
+    color: #181a1b;
+}
+#logout-modal .modal-btn.confirm:hover {
+    background: #00b88a;
+    color: #fff;
+    transform: scale(1.04);
+}
+#logout-modal .modal-btn.cancel {
+    background: #232526;
+    color: #e0e0e0;
+    border: 1.5px solid #444;
+}
+#logout-modal .modal-btn.cancel:hover {
+    background: #181a1b;
+    color: #00e6b0;
+    transform: scale(1.04);
+}
+@keyframes fadeInModal {
+    from { opacity: 0; transform: scale(0.97);}
+    to { opacity: 1; transform: scale(1);}
+}
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div id="toast-container">
+          {% for category, message in messages %}
+            <div class="toast toast-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    <nav>
+        <div class="nav-left">
+            <a href="{{ url_for('inicio') }}">
+            <img src="{{ url_for('static', filename='images/inicio.png') }}" alt="Inicio">Inicio
+        </a>
+            <a href="{{ url_for('productos') }}">
+            <img src="{{ url_for('static', filename='images/mercado.png') }}" alt="Mercado">Mercado
+        </a>
+            <a href="{{ url_for('productores') }}">
+            <img src="{{ url_for('static', filename='images/productor.png') }}" alt="Productores">Productores
+        </a>
+            <a href="{{ url_for('contacto') }}">
+            <img src="{{ url_for('static', filename='images/contacto.png') }}" alt="Contacto">Contacto
+        </a>
+        </div>
+        <div class="nav-right">
+            {% if session['usuario_id'] %}
+                <a href="{{ url_for('panel_cliente') }}">
+            <img src="{{ url_for('static', filename='images/perfil.png') }}" alt="Mi Cuenta">Mi Cuenta
+        </a>
+                <a href="{{ url_for('logout') }}">
+            <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar Sesión">Cerrar Sesión
+        </a>
+            {% else %}
+                <a href="{{ url_for('login') }}">
+            <img src="{{ url_for('static', filename='images/iniciarsesion.png') }}" alt="Iniciar Sesión">Iniciar Sesión
+        </a>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="container">
+        <h2>🛒 Tu Carrito de Compras</h2>
+        {% if productos %}
+            <ul class="carrito-lista">
+            {% for producto in productos %}
+                <li class="carrito-item">
+    <img src="{{ url_for('static', filename='images/' + producto.imagen) }}" alt="{{ producto.nombre }}">
+    <div class="carrito-detalle">
+        <p><strong>{{ producto.nombre }}</strong></p>
+        <p>Cantidad: {{ producto.cantidad }}</p>
+        <p>Precio: ${{ producto.precio }}</p>
+        <form action="{{ url_for('quitar_carrito', producto_id=producto.id) }}" method="post" style="display:inline;">
+            <button type="submit" style="background:#D32F2F;color:white;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-weight:bold;margin-top:8px;">
+                Quitar
+            </button>
+        </form>
+    </div>
+</li>
+            {% endfor %}
+            </ul>
+            <p class="total">Total: ${{ total }}</p>
+            <a href="{{ url_for('metodos_pago') }}" class="pagar">Proceder al Pago</a>
+        {% else %}
+            <p class="mensaje-carrito">🛒 Tu carrito de compras está vacío.</p>
+        {% endif %}
+    </div>
+
+
+    <footer>
+    <p>© 2025 AgronoMia - Todos los derechos reservados</p>
+</footer>
+<div id="logout-modal-bg">
+    <div id="logout-modal">
+        <h2>¿Cerrar sesión?</h2>
+        <p>¿Estás seguro de que deseas cerrar tu sesión?<br>Puedes continuar navegando si lo prefieres.</p>
+        <div class="modal-btns">
+            <form id="logout-form" action="{{ url_for('logout') }}" method="get" style="display:inline;">
+                <button type="submit" class="modal-btn confirm">Sí, cerrar sesión</button>
+            </form>
+            <button class="modal-btn cancel" onclick="cerrarLogoutModal()">Cancelar</button>
+        </div>
+    </div>
+</div>
+    <script>
+      setTimeout(() => {
+        const toast = document.getElementById('toast-container');
+        if (toast) toast.remove();
+      }, 3000);
+    </script>
+    <script>
+function abrirLogoutModal() {
+    document.getElementById('logout-modal-bg').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+function cerrarLogoutModal() {
+    document.getElementById('logout-modal-bg').classList.remove('active');
+    document.body.style.overflow = '';
+}
+document.addEventListener('DOMContentLoaded', function() {
+    const logoutLinks = Array.from(document.querySelectorAll('a[href="{{ url_for("logout") }}"]'));
+    logoutLinks.forEach(function(logoutLink) {
+        logoutLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            abrirLogoutModal();
+        });
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === "Escape") cerrarLogoutModal();
+    });
+});
+</script>
+</body>
+</html>
