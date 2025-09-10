@@ -16,7 +16,7 @@ import pandas as pd
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:0426@localhost/agroconnect'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://dava:exoastro3@localhost/agronomia'
 app.secret_key = 'clave_secreta_super_segura' 
 db = SQLAlchemy(app)
 UPLOAD_FOLDER = 'static/images'
@@ -26,8 +26,9 @@ ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = 'l201080264@iztapalapa.tecnm.mx'
-app.config['MAIL_PASSWORD'] = 'hosp jpte weds pczc'
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME', 'moviitiz.tec@gmail.com')  # Usa valor por defecto si no hay .env
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD', 'iryz gjiw olni ycgo')  # Usa valor por defecto si no hay .env
+app.config['MAIL_DEFAULT_SENDER'] = 'moviitiz.tec@gmail.com'
 mail = Mail(app)
 
 def allowed_file(filename):
@@ -72,8 +73,12 @@ class Producto(db.Model):
     categoria_id = db.Column(db.Integer, db.ForeignKey('categoria.id'), nullable=False)
     productor_id = db.Column(db.Integer, db.ForeignKey('productor.id'), nullable=False)
     activo = db.Column(db.Boolean, default=True)
+    tiempo_germinacion = db.Column(db.Integer)  # Nuevo campo para semillas
+    epoca_siembra = db.Column(db.String(100))   # Nuevo campo para semillas
+    cantidad_semillas = db.Column(db.Integer)   # Nuevo campo para semillas
     productor = db.relationship('Productor', back_populates='productos')  
-    categoria = db.relationship('Categoria', back_populates='productos') 
+    categoria = db.relationship('Categoria', back_populates='productos')
+
 
 class Categoria(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -154,6 +159,22 @@ def inicio():
     if 'usuario_id' in session and session.get('tipo_usuario') == 'Cliente':
         cantidad_carrito = db.session.query(db.func.sum(Carrito.cantidad)).filter_by(usuario_id=session['usuario_id']).scalar() or 0
     return render_template('inicio.html', cantidad_carrito=cantidad_carrito)
+
+
+@app.route('/semillas')
+def semillas():
+    categoria_id = request.args.get('categoria_id')
+    if categoria_id:
+        productos = Producto.query.filter_by(categoria_id=categoria_id, activo=True).all()
+    else:
+        productos = Producto.query.filter_by(activo=True).all()
+    
+    categorias = Categoria.query.all()
+    cantidad_carrito = 0
+    if 'usuario_id' in session and session.get('tipo_usuario') == 'Cliente':
+        cantidad_carrito = db.session.query(db.func.sum(Carrito.cantidad)).filter_by(usuario_id=session['usuario_id']).scalar() or 0
+    
+    return render_template('semillas.html', productos=productos, categorias=categorias, cantidad_carrito=cantidad_carrito)
 
 @app.route('/productos')
 def productos():
@@ -783,7 +804,6 @@ def agregar_producto():
 
 
 
-
 @app.route('/editar_producto/<int:producto_id>', methods=['GET', 'POST'])
 def editar_producto(producto_id):
     producto = Producto.query.get(producto_id)
@@ -1245,12 +1265,78 @@ def registro_admin():
 
     return render_template('registro_admin.html')
 
-    return render_template('registro_admin.html')
+@app.route('/registro_productores', methods=['GET', 'POST'])
+def registro_productores():
+    if request.method == 'POST':
+        nombre = request.form['nombre']
+        email = request.form['email'].strip().lower()  
+        password = request.form['password']
+
+        if not re.match(r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}$", password):
+            flash("La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un carácter especial.", "error")
+            return redirect(url_for('registro_productores'))
+
+        if Usuario.query.filter_by(email=email).first():
+            return render_template('registro_productores.html', correo_duplicado=True, nombre=nombre, email=email)
+
+        try:
+            nuevo_usuario = Usuario(nombre=nombre, email=email, password=password, tipo_usuario="Productor")
+            db.session.add(nuevo_usuario)
+            db.session.commit()
+ 
+            nuevo_productor = Productor(nombre=nombre, email=email)
+            db.session.add(nuevo_productor)
+            db.session.commit()
+            return render_template('registro_productores.html', registro_exitoso=True)
+        except Exception as e:
+            db.session.rollback()
+            return render_template('registro_productores.html', registro_fallido=True)
+
+    return render_template('registro_productores.html')
+
+
+@app.route('/perfil_productor')
+def perfil_productor():
+    if 'usuario_id' not in session or session.get('tipo_usuario') != 'Productor':
+        return redirect(url_for('login'))
+    
+    productor_id = session.get('productor_id')
+    productor = Productor.query.get_or_404(productor_id)
+    
+    return render_template('perfil_productor.html', productor=productor)
+
+@app.route('/actualizar_perfil_productor', methods=['POST'])
+def actualizar_perfil_productor():
+    if 'usuario_id' not in session or session.get('tipo_usuario') != 'Productor':
+        return redirect(url_for('login'))
+    
+    productor_id = session.get('productor_id')
+    productor = Productor.query.get_or_404(productor_id)
+    
+    # Actualizar datos
+    productor.nombre = request.form['nombre']
+    productor.email = request.form['email']
+    productor.ubicacion = request.form['ubicacion']
+    productor.descripcion = request.form['descripcion']
+    
+    # Manejar imagen
+    imagen = request.files.get('imagen')
+    if imagen and imagen.filename:
+        if allowed_file(imagen.filename):
+            filename = secure_filename(imagen.filename)
+            imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            productor.imagen = filename
+    
+    db.session.commit()
+    flash("Perfil actualizado correctamente", "success")
+    return redirect(url_for('perfil_productor'))
+
 
 @app.route('/gestionar_productores')
 def gestionar_productores():
     productores = Productor.query.all()
     return render_template('gestionar_productores.html', productores=productores)
+
 
 @app.route('/eliminar_productor/<int:productor_id>', methods=['POST'])
 def eliminar_productor(productor_id):
