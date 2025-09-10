@@ -265,9 +265,6 @@
         <a href="{{ url_for('panel_cliente') }}">
             <img src="{{ url_for('static', filename='images/perfil.png') }}" alt="Mi perfil">Mi Cuenta
         </a>
-        <a href="#" id="logout-link">
-            <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar">Cerrar Sesión
-        </a>
     </div>
 </nav>
 
@@ -300,41 +297,6 @@
         <button type="submit" class="boton-enviar">Enviar Mensaje</button>
     </form>
     </div>
-
-<div id="logout-modal-bg">
-    <div id="logout-modal">
-        <h2>¿Cerrar sesión?</h2>
-        <p>¿Estás seguro de que deseas cerrar tu sesión?<br>Puedes continuar navegando si lo prefieres.</p>
-        <div class="modal-btns">
-            <form id="logout-form" action="{{ url_for('logout') }}" method="get" style="display:inline;">
-                <button type="submit" class="modal-btn confirm">Sí, cerrar sesión</button>
-            </form>
-            <button class="modal-btn cancel" onclick="cerrarLogoutModal()">Cancelar</button>
-        </div>
-    </div>
-</div>
-<script>
-function abrirLogoutModal() {
-    document.getElementById('logout-modal-bg').classList.add('active');
-    document.body.style.overflow = 'hidden';
-}
-function cerrarLogoutModal() {
-    document.getElementById('logout-modal-bg').classList.remove('active');
-    document.body.style.overflow = '';
-}
-document.addEventListener('DOMContentLoaded', function() {
-    const logoutLink = document.getElementById('logout-link');
-    if (logoutLink) {
-        logoutLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            abrirLogoutModal();
-        });
-    }
-    document.addEventListener('keydown', function(e) {
-        if (e.key === "Escape") cerrarLogoutModal();
-    });
-});
-</script>
 
     <footer>
         <p>© 2025 AgronoMia - Todos los derechos reservados</p>

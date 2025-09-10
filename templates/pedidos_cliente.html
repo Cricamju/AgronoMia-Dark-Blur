@@ -4,71 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Pedidos | AgronoMia</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: url('{{ url_for("static", filename="images/verduras.jpg") }}') no-repeat center center fixed;
-            background-size: cover;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
-
-             nav {
-    background-color: #2E7D32;
-    padding: 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
-}
-.nav-left, .nav-right {
-    display: flex;
-    align-items: center;
-    gap: 25px; 
-}
-nav a {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-    padding: 12px 18px;
-    border-radius: 8px;
-    transition: all 0.3s ease-in-out;
-    font-size: 1em;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-nav a img {
-    height: 32px;
-    width: 32px;
-    vertical-align: middle;
-}
-nav a:hover {
-    background: rgba(255, 255, 255, 0.3);
-    color: #FFD700;
-}
-
-        .container {
-            max-width: 900px;
-            margin: auto;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
-            text-align: center;
-        }
-
-        footer {
-            background-color: #2E7D32;
-            color: white;
-            text-align: center;
-            padding: 15px;
-            margin-top: auto;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo8.css') }}">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div id="toast-container">
+          {% for category, message in messages %}
+            <div class="toast toast-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
 </head>
 <body>
 
