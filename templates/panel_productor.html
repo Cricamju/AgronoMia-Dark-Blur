@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Productor | AgronoMia</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo9.css') }}">
+</head>
+<body>
+    <nav>
+        <div style="width:100%; display:flex; align-items:center; justify-content:center; position:relative;">
+            <span style="color:#00e6b0; font-size:1.45em; font-weight:800; letter-spacing:1px; text-align:center;">
+                Panel del Productor
+            </span>
+            <div style="position:absolute; right:32px; top:50%; transform:translateY(-50%);">
+                <a href="{{ url_for('logout') }}" style="color:#f5f5f7; text-decoration:none; font-weight:500; padding:10px 18px; border-radius:8px; transition:background 0.2s, color 0.2s; font-size:1.1em; display:flex; align-items:center; gap:8px; letter-spacing:0.5px;" id="logout-link">
+                    <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar Sesión" style="height:28px;width:28px;vertical-align:middle;">
+                    Cerrar Sesión
+                </a>
+            </div>
+        </div>
+    </nav>
+    <div class="container nuevo-panel extra-ancho">
+        <div class="panel-flex-row-2col">
+            <aside class="sidebar-perfil">
+                <div class="perfil-card-nueva">
+                    <div class="panel-card-icon perfil-icon">👤</div>
+                    <h3 class="registro-title">Registro Rápido Productores a Publicarse</h3>
+                    <form action="{{ url_for('registrar_productor') }}" method="POST" enctype="multipart/form-data">
+                        <div class="perfil-form-row">
+                            <div class="perfil-form-group">
+                                <label for="nombre">Nombre</label>
+                                <input type="text" id="nombre" name="nombre" value="" required>
+                            </div>
+                            <div class="perfil-form-group">
+                                <label for="email">Correo</label>
+                                <input type="email" id="email" name="email" value="" required>
+                            </div>
+                            <div class="perfil-form-group">
+                                <label for="ubicacion">Ubicación</label>
+                                <input type="text" id="ubicacion" name="ubicacion" value="" required>
+                            </div>
+                            <div class="perfil-form-group">
+                                <label for="imagen">Foto</label>
+                                <input type="file" id="imagen" name="imagen" accept="image/*" style="display:none;" onchange="mostrarNombreArchivo(this)">
+                                <label for="imagen" class="btn-file-custom" style="background:none;border:none;color:#00e6b0;box-shadow:none;padding:0;min-width:0;cursor:pointer;flex-shrink:0;">
+                                    <span style="font-size:1.1em;vertical-align:middle;">📷</span> Seleccionar archivo
+                                </label>
+                                <div id="file-info-box" style="display:none;margin-top:10px;width:100%;background:rgba(24,26,27,0.65);border:1.5px solid #00e6b0;border-radius:10px;padding:10px 14px;box-sizing:border-box;min-height:38px;display:flex;align-items:center;justify-content:space-between;">
+                                    <span id="nombre-archivo" style="color:#00e6b0;font-size:0.97em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1 1 auto;"></span>
+                                    <span id="borrar-archivo" onclick="borrarArchivo()" style="cursor:pointer;margin-left:18px;font-size:1.25em;user-select:none;flex-shrink:0;" title="Quitar imagen">❌</span>
+                                </div>
+                            </div>
+                            <div class="perfil-form-group">
+                                <label for="descripcion">Descripción</label>
+                                <textarea id="descripcion" name="descripcion" rows="3" required></textarea>
+                            </div>
+                            <button type="button" class="btn-blur btn-submit" onclick="abrirConfirmarRegistro()">Guardar y Publicar</button>
+                        </div>
+                    </form>
+                </div> 
+            </aside>
+            <main class="panel-cards-fila">
+                <div class="panel-card">
+                    <span class="panel-card-icon">🌱</span>
+                    <div class="panel-card-content">
+                        <h3>Mis Productos</h3>
+                        <p>Gestiona tu inventario y actualiza precios fácilmente.</p>
+                    </div>
+                    <button class="btn-blur" onclick="window.location.href='{{ url_for('admin_productos_productor') }}'">Administrar Productos</button>
+                </div>
+                <div class="panel-card">
+                    <span class="panel-card-icon">📦</span>
+                    <div class="panel-card-content">
+                        <h3>Pedidos Recibidos</h3>
+                        <p>Consulta y gestiona tus pedidos pendientes y entregados.</p>
+                    </div>
+                    <button class="btn-blur" onclick="window.location.href='{{ url_for('pedidos_productor') }}'">Ver Pedidos</button>
+                </div>
+                <div class="panel-card">
+                    <span class="panel-card-icon">✉️</span>
+                    <div class="panel-card-content">
+                        <h3>Bandeja de Mensajes</h3>
+                        <p>Revisa y responde los mensajes que te han enviado.</p>
+                    </div>
+                    <button class="btn-blur" onclick="window.location.href='{{ url_for('bandeja_mensajes_productor') }}'">Ver Bandeja</button>
+                </div>
+                <!-- Botón de Mercado agregado -->
+                <div class="panel-card">
+                    <span class="panel-card-icon">🛒</span>
+                    <div class="panel-card-content">
+                        <h3>Mercado</h3>
+                        <p>Explora productos de otros productores.</p>
+                    </div>
+                    <button class="btn-blur" onclick="window.location.href='{{ url_for('productos') }}'">Ver Productos</button>
+                </div>
+                <div class="panel-card">
+                <span class="panel-card-icon">👤</span>
+                <div class="panel-card-content">
+                <h3>Mi Perfil</h3>
+                <p>Actualiza tu información personal y foto de perfil.</p>
+                </div>
+                    <button class="btn-blur" onclick="window.location.href='{{ url_for('perfil_productor') }}'">Ver Perfil</button>
+                </div>
+            </main>
+        </div>
+    </div>
+    <footer>
+        <p>© 2025 AgronoMia - Todos los derechos reservados</p>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ventasLabels = {{ ventas_labels|tojson }};
+        const ventasData = {{ ventas_data|tojson }};
+        const ctx = document.getElementById('ventasChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ventasLabels,
+                datasets: [{
+                    label: 'Ventas ($)',
+                    data: ventasData,
+                    backgroundColor: 'rgba(0, 230, 176, 0.7)',
+                    borderColor: 'rgba(0, 230, 176, 1)',
+                    borderWidth: 2,
+                    borderRadius: 6,
+                    maxBarThickness: 38
+                }]
+            },
+            options: {
+                responsive: false,
+                plugins: {
+                    legend: { display: false },
+                    title: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#eee' }
+                    }
+                }
+            }
+        });
+    </script>
+    <div id="logout-modal-bg">
+        <div id="logout-modal">
+            <h2>¿Cerrar sesión?</h2>
+            <p>¿Estás seguro de que deseas cerrar tu sesión?<br>Puedes continuar navegando si lo prefieres.</p>
+            <div class="modal-btns">
+                <form id="logout-form" action="{{ url_for('logout') }}" method="get" style="display:inline;">
+                    <button type="submit" class="modal-btn confirm">Sí, cerrar sesión</button>
+                </form>
+                <button class="modal-btn cancel" onclick="cerrarLogoutModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+    <div id="toast-blur" style="display:none;"></div>
+    <script>
+    function abrirLogoutModal() {
+        document.getElementById('logout-modal-bg').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function cerrarLogoutModal() {
+        document.getElementById('logout-modal-bg').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        const logoutLink = document.getElementById('logout-link');
+        if (logoutLink) {
+            logoutLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                abrirLogoutModal();
+            });
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === "Escape") cerrarLogoutModal();
+        });
+    });
+    function showToastBlur(msg) {
+        const toast = document.getElementById('toast-blur');
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(() => { toast.style.display = 'none'; }, 3000);
+    }
+    </script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        {% if category == "success" %}
+            showToastBlur("✅ {{ message }}");
+        {% endif %}
+      {% endfor %}
+    {% endwith %}
+});
+</script>
+<script>
+function mostrarNombreArchivo(input) {
+    const nombre = input.files.length > 0 ? input.files[0].name : '';
+    const fileInfoBox = document.getElementById('file-info-box');
+    const nombreArchivo = document.getElementById('nombre-archivo');
+    if (nombre) {
+        nombreArchivo.textContent = nombre;
+        fileInfoBox.style.display = 'flex';
+    } else {
+        nombreArchivo.textContent = '';
+        fileInfoBox.style.display = 'none';
+    }
+}
+function borrarArchivo() {
+    const inputFile = document.getElementById('imagen');
+    const nombreArchivo = document.getElementById('nombre-archivo');
+    const fileInfoBox = document.getElementById('file-info-box');
+    inputFile.value = '';
+    nombreArchivo.textContent = '';
+    fileInfoBox.style.display = 'none';
+}
+document.getElementById('imagen').addEventListener('change', function() {
+    const borrarIcono = document.getElementById('borrar-archivo');
+    if (this.files.length > 0) {
+        borrarIcono.style.display = 'inline'; 
+    } else {
+        borrarIcono.style.display = 'none'; 
+    }
+});
+function abrirConfirmarRegistro() {
+    document.getElementById('confirmar-modal-bg').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+function cerrarConfirmarRegistro() {
+    document.getElementById('confirmar-modal-bg').style.display = 'none';
+    document.body.style.overflow = '';
+}
+function confirmarRegistro() {
+    cerrarConfirmarRegistro();
+    document.querySelector('.perfil-card-nueva form').submit();
+}
+function cancelarRegistro() {
+    cerrarConfirmarRegistro();
+    showToastBlur("Registro cancelado.", "error");
+}
+function showToastBlur(msg, type="success") {
+    const toast = document.getElementById('toast-blur');
+    toast.textContent = msg;
+    toast.style.display = 'block';
+    toast.style.background = type === "success"
+        ? "rgba(24,26,27,0.92)"
+        : "rgba(24,26,27,0.92)";
+    toast.style.borderLeft = type === "success"
+        ? "6px solid #00e6b0"
+        : "6px solid #e6004c";
+    toast.style.color = "#f5f5f7";
+    setTimeout(() => { toast.style.display = 'none'; }, 3000);
+}
+</script>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <script>
+      window.onload = function() {
+        {% for category, message in messages %}
+          showToastBlur("{{ message }}", "{{ 'success' if category=='success' else 'error' }}");
+        {% endfor %}
+      }
+    </script>
+  {% endif %}
+{% endwith %}
+
+<div id="confirmar-modal-bg"
+     style="display:none;position:fixed;z-index:3000;left:0;top:0;right:0;bottom:0;width:100vw;height:100vh;
+            background:rgba(24,26,27,0.55);backdrop-filter:blur(10px);
+            align-items:center;justify-content:center;transition:background 0.3s;">
+    <div id="confirmar-modal"
+         style="background:rgba(24,26,27,0.97);border-radius:22px;box-shadow:0 8px 32px rgba(0,0,0,0.28);
+                padding:48px 38px 36px 38px;text-align:center;max-width:370px;width:90vw;color:#f5f5f7;
+                animation: fadeInModal 0.4s;">
+        <h2 style="color:#00e6b0;font-size:2em;margin-bottom:18px;font-weight:800;letter-spacing:1px;">
+            ¿Registrar productor?
+        </h2>
+        <p style="font-size:1.15em;margin-bottom:32px;color:#e0f7fa;">
+            ¿Estás seguro de querer registrar a este productor?
+        </p>
+        <div style="display:flex;justify-content:center;gap:22px;">
+            <button class="modal-btn confirm" onclick="confirmarRegistro()"
+                style="background:#00e6b0;color:#181a1b;font-weight:600;border:none;border-radius:8px;
+                padding:12px 18px;font-size:1em;box-shadow:0 2px 10px rgba(0,230,176,0.10);cursor:pointer;">
+                Sí, registrar
+            </button>
+            <button class="modal-btn cancel" onclick="cancelarRegistro()"
+                style="background:#232526;color:#e0e0e0;border:1.5px solid #444;border-radius:8px;
+                padding:12px 18px;font-size:1em;font-weight:600;cursor:pointer;">
+                Cancelar
+            </button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

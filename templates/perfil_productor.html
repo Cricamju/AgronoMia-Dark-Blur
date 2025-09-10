@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil Productor | AgronoMia</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo13.css') }}">
+</head>
+<body>
+    <nav>
+        <div style="width:100%; display:flex; align-items:center; justify-content:center; position:relative;">
+            <span style="color:#00e6b0; font-size:1.45em; font-weight:800; letter-spacing:1px; text-align:center;">
+                Perfil del Productor
+            </span>
+            <div style="position:absolute; right:32px; top:50%; transform:translateY(-50%);">
+                <a href="{{ url_for('panel_productor') }}" style="color:#f5f5f7; text-decoration:none; font-weight:500; padding:10px 18px; border-radius:8px; transition:background 0.2s, color 0.2s; font-size:1.1em; display:flex; align-items:center; gap:8px; letter-spacing:0.5px; margin-right:15px;">
+                    ← Volver al Panel
+                </a>
+                <a href="{{ url_for('logout') }}" style="color:#f5f5f7; text-decoration:none; font-weight:500; padding:10px 18px; border-radius:8px; transition:background 0.2s, color 0.2s; font-size:1.1em; display:flex; align-items:center; gap:8px; letter-spacing:0.5px;" id="logout-link">
+                    <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar Sesión" style="height:28px;width:28px;vertical-align:middle;">
+                    Cerrar Sesión
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>👤 Mi Perfil de Productor</h2>
+        
+        <div class="perfil-card">
+            <div class="perfil-header">
+                <div class="perfil-avatar">
+                    {% if productor.imagen and productor.imagen != 'default.png' %}
+                        <img src="{{ url_for('static', filename='images/' + productor.imagen) }}" alt="{{ productor.nombre }}">
+                    {% else %}
+                        <div class="avatar-placeholder">👤</div>
+                    {% endif %}
+                </div>
+                <h3>{{ productor.nombre }}</h3>
+                <p>{{ productor.email }}</p>
+            </div>
+
+            <form action="{{ url_for('actualizar_perfil_productor') }}" method="POST" enctype="multipart/form-data" class="perfil-form">
+                <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" id="nombre" name="nombre" value="{{ productor.nombre }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Correo Electrónico</label>
+                    <input type="email" id="email" name="email" value="{{ productor.email }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="ubicacion">Ubicación</label>
+                    <input type="text" id="ubicacion" name="ubicacion" value="{{ productor.ubicacion or '' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcion">Descripción</label>
+                    <textarea id="descripcion" name="descripcion" rows="4">{{ productor.descripcion or '' }}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="imagen">Foto de Perfil</label>
+                    <input type="file" id="imagen" name="imagen" accept="image/*" onchange="mostrarVistaPrevia(this)">
+                    <div class="file-preview">
+                        {% if productor.imagen and productor.imagen != 'default.png' %}
+                            <img id="vista-previa" src="{{ url_for('static', filename='images/' + productor.imagen) }}" alt="Vista previa">
+                        {% else %}
+                            <img id="vista-previa" src="" alt="Vista previa" style="display:none;">
+                        {% endif %}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-guardar">💾 Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 AgronoMia - Todos los derechos reservados</p>
+    </footer>
+
+    <script>
+    function mostrarVistaPrevia(input) {
+        const vistaPrevia = document.getElementById('vista-previa');
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                vistaPrevia.src = e.target.result;
+                vistaPrevia.style.display = 'block';
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // Manejo del modal de logout
+    function abrirLogoutModal() {
+        document.getElementById('logout-modal-bg').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function cerrarLogoutModal() {
+        document.getElementById('logout-modal-bg').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const logoutLink = document.getElementById('logout-link');
+        if (logoutLink) {
+            logoutLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                abrirLogoutModal();
+            });
+        }
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === "Escape") cerrarLogoutModal();
+        });
+    });
+    </script>
+
+    <!-- Modal de logout -->
+    <div id="logout-modal-bg">
+        <div id="logout-modal">
+            <h2>¿Cerrar sesión?</h2>
+            <p>¿Estás seguro de que deseas cerrar tu sesión?<br>Puedes continuar navegando si lo prefieres.</p>
+            <div class="modal-btns">
+                <form id="logout-form" action="{{ url_for('logout') }}" method="get" style="display:inline;">
+                    <button type="submit" class="modal-btn confirm">Sí, cerrar sesión</button>
+                </form>
+                <button class="modal-btn cancel" onclick="cerrarLogoutModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

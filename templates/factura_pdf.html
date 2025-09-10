@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Factura AgronoMia</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 13px; }
+        h2 { color: #2E7D32; }
+        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        th, td { border: 1px solid #bbb; padding: 6px; text-align: left; }
+        th { background: #f0f0f0; }
+        .total { font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h2>Factura AgronoMia</h2>
+    <p><strong>Pedido #:</strong> {{ pedido.id }}</p>
+    <p><strong>Fecha:</strong> {{ pedido.fecha.strftime('%d/%m/%Y %H:%M') }}</p>
+    <p><strong>Método de pago:</strong> {{ metodo_pago }}</p>
+    <table>
+        <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio unitario</th>
+            <th>Subtotal</th>
+        </tr>
+        {% for producto in productos %}
+        <tr>
+            <td>{{ producto.nombre }}</td>
+            <td>{{ producto.cantidad }}</td>
+            <td>${{ producto.precio }}</td>
+            <td>${{ producto.subtotal }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="3" class="total" align="right">Total:</td>
+            <td class="total">${{ total }}</td>
+        </tr>
+    </table>
+    <p style="margin-top:24px;">¡Gracias por tu compra!</p>
+</body>
+</html>

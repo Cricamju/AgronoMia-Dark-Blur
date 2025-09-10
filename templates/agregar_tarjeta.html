@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agregar Tarjeta | AgronoMia</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: url('{{ url_for("static", filename="images/background.jpg") }}') no-repeat center center fixed;
+            background-size: cover;
+            color: #f5f5f7;
+        }
+        nav {
+    background: rgba(24, 26, 27, 0.65);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 70px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 0 32px;
+}
+.nav-left, .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+nav a {
+    color: #f5f5f7;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 10px 18px;
+    border-radius: 8px;
+    transition: background 0.2s, color 0.2s;
+    font-size: 1.1em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.5px;
+}
+nav a img {
+    height: 28px;
+    width: 28px;
+    vertical-align: middle;
+}
+nav a:hover {
+    background: rgba(255,255,255,0.08);
+    color: #00e6b0;
+}
+        .container {
+            max-width: 420px;
+            width: 100%;
+            margin: 70px auto 40px auto;
+            background: rgba(24, 26, 27, 0.68);
+            backdrop-filter: blur(12px);
+            padding: 38px 32px 32px 32px;
+            border-radius: 20px;
+            box-shadow: 0px 8px 32px rgba(0,0,0,0.25);
+            text-align: left;
+            border: 1.5px solid rgba(0,230,176,0.13);
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+        h2 {
+            color: #00e6b0;
+            margin-bottom: 32px; 
+            text-align: center;  
+            font-size: 1.5em;
+            letter-spacing: 1px;
+        }
+        .form-tarjeta {
+            display: flex;
+            flex-direction: column;
+            gap: 24px; 
+        }
+        .form-tarjeta label {
+            color: #00e6b0;
+            font-weight: bold;
+            margin-bottom: 6px;
+            margin-left: 2px;
+            font-size: 1em;
+            display: block;
+        }
+        .form-tarjeta input {
+            width: 100%;
+            padding: 14px;
+            border: 1.5px solid #00e6b0;
+            border-radius: 8px;
+            font-size: 1em;
+            background: rgba(24, 26, 27, 0.65);
+            color: #f5f5f7;
+            transition: border 0.2s, box-shadow 0.2s;
+            box-sizing: border-box;
+            margin-bottom: 0;
+        }
+        .form-tarjeta input:focus {
+            border-color: #2E7D32;
+            outline: none;
+            box-shadow: 0px 4px 12px rgba(0,230,176,0.13);
+        }
+        .boton-guardar {
+            display: block;
+            background-color: #00e6b0;
+            color: #181a1b;
+            font-size: 1.15em;
+            padding: 14px 0;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 10px;
+            width: 100%;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s, color 0.3s, transform 0.2s;
+            letter-spacing: 1px;
+        }
+        .boton-guardar:hover {
+            background-color: #2E7D32;
+            color: #fff;
+            transform: scale(1.03);
+        }
+        .volver {
+            display: inline-block;
+            background-color: #181a1b;
+            color: #00e6b0;
+            font-weight: bold;
+            padding: 10px 22px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin-top: 18px;
+            transition: background 0.3s, color 0.3s;
+            border: 1.5px solid #00e6b0;
+            text-align: center;
+        }
+        .volver:hover {
+            background-color: #00e6b0;
+            color: #181a1b;
+        }
+        footer {
+            background: rgba(24, 26, 27, 0.65);
+    backdrop-filter: blur(10px);
+    color: #aaa;
+    text-align: center;
+    padding: 18px 0 10px 0;
+    font-size: 1em;
+    letter-spacing: 1px;
+    margin-top: auto;
+    border-top: 1px solid #222;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
+        }
+        #alerta-modal-bg {
+    display: none;
+    position: fixed;
+    z-index: 3000;
+    left: 0; top: 0; right: 0; bottom: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(24, 26, 27, 0.55);
+    backdrop-filter: blur(8px);
+    justify-content: center;
+    align-items: center;
+    transition: background 0.3s;
+}
+#alerta-modal-bg.active {
+    display: flex;
+}
+#alerta-modal {
+    background: rgba(24, 26, 27, 0.92);
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+    padding: 44px 38px 32px 38px;
+    text-align: center;
+    max-width: 370px;
+    width: 90vw;
+    color: #f5f5f7;
+    animation: fadeInModal 0.4s;
+}
+#alerta-modal h2 {
+    font-size: 2.5em;
+    margin-bottom: 12px;
+}
+#alerta-modal .alerta-success {
+    color: #00e6b0;
+}
+#alerta-modal .alerta-error {
+    color: #e6004c;
+}
+#alerta-modal p {
+    font-size: 1.15em;
+    margin-bottom: 28px;
+    color: #e0f7fa;
+}
+#alerta-modal .modal-btn {
+    padding: 12px 32px;
+    border-radius: 8px;
+    border: none;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    background: #00e6b0;
+    color: #181a1b;
+    transition: background 0.2s, color 0.2s, transform 0.15s;
+}
+#alerta-modal .modal-btn:hover {
+    background: #00b88a;
+    color: #fff;
+    transform: scale(1.04);
+}
+@keyframes fadeInModal {
+    from { opacity: 0; transform: scale(0.97);}
+    to { opacity: 1; transform: scale(1);}
+}
+#logout-modal-bg {
+    display: none;
+    position: fixed;
+    z-index: 4000;
+    left: 0; top: 0; right: 0; bottom: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(24, 26, 27, 0.65);
+    backdrop-filter: blur(10px);
+    justify-content: center;
+    align-items: center;
+    transition: background 0.3s;
+}
+#logout-modal-bg.active {
+    display: flex;
+}
+#logout-modal {
+    background: rgba(24, 26, 27, 0.92);
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+    padding: 36px 28px;
+    text-align: center;
+    max-width: 350px;
+    width: 90vw;
+    color: #f5f5f7;
+    animation: fadeInModal 0.4s;
+}
+#logout-modal h2 {
+    font-size: 2.2em;
+    margin-bottom: 10px;
+}
+#logout-modal p {
+    font-size: 1em;
+    margin-bottom: 24px;
+    color: #e0f7fa;
+}
+.modal-btns {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+}
+.modal-btn {
+    padding: 12px 24px;
+    border-radius: 8px;
+    border: none;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    background: #00e6b0;
+    color: #181a1b;
+    transition: background 0.2s, color 0.2s, transform 0.15s;
+}
+.modal-btn:hover {
+    background: #00b88a;
+    color: #fff;
+    transform: scale(1.04);
+}
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-left">
+        <a href="{{ url_for('inicio') }}">
+            <img src="{{ url_for('static', filename='images/inicio.png') }}" alt="Inicio">Inicio
+        </a>
+        <a href="{{ url_for('productos') }}">
+            <img src="{{ url_for('static', filename='images/mercado.png') }}" alt="Mercado">Mercado
+        </a>
+        <a href="{{ url_for('contacto') }}">
+            <img src="{{ url_for('static', filename='images/contacto.png') }}" alt="Contacto">Contacto
+        </a>
+    </div>
+    <div class="nav-right">
+        <a href="{{ url_for('panel_cliente') }}">
+            <img src="{{ url_for('static', filename='images/perfil.png') }}" alt="Mi Cuenta">Mi Cuenta
+        </a>
+        <a href="{{ url_for('logout') }}">
+            <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar Sesión">Cerrar Sesión
+        </a>
+    </div>
+</nav>
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div id="alerta-modal-bg" class="active">
+      <div id="alerta-modal">
+        {% for category, message in messages %}
+          <h2 class="alerta-{{ category }}">
+            {% if category == 'success' %}✔{% else %}✖{% endif %}
+          </h2>
+          <p>{{ message }}</p>
+        {% endfor %}
+        <button class="modal-btn confirm" onclick="cerrarAlertaModal()">Aceptar</button>
+      </div>
+    </div>
+  {% endif %}
+{% endwith %}
+    <div class="container">
+        <h2>Agregar Nueva Tarjeta</h2>
+        <form class="form-tarjeta" method="post">
+            <div>
+                <label for="numero_tarjeta">Número de tarjeta</label>
+                <input type="text" id="numero_tarjeta" name="numero_tarjeta" placeholder="Ej: 1234567812345678" maxlength="16" pattern="\d{16}" required>
+            </div>
+            <div>
+                <label for="propietario">Propietario de la tarjeta</label>
+                <input type="text" id="propietario" name="propietario" placeholder="Nombre completo" required>
+            </div>
+            <div>
+                <label for="fecha_expiracion">Fecha de expiración</label>
+                <input type="text" id="fecha_expiracion" name="fecha_expiracion" placeholder="MM/AA" maxlength="5" pattern="\d{2}/\d{2}" required>
+            </div>
+            <button type="submit" class="boton-guardar">Guardar Tarjeta</button>
+        </form>
+        <a href="{{ url_for('panel_cliente') }}" class="volver">Volver al Panel</a>
+    </div>
+    <footer>
+        <p>© 2025 AgronoMia - Todos los derechos reservados</p>
+    </footer>
+    <div id="logout-modal-bg">
+    <div id="logout-modal">
+        <h2>¿Cerrar sesión?</h2>
+        <p>¿Estás seguro de que deseas cerrar tu sesión?<br>Puedes continuar navegando si lo prefieres.</p>
+        <div class="modal-btns">
+            <form id="logout-form" action="{{ url_for('logout') }}" method="get" style="display:inline;">
+                <button type="submit" class="modal-btn confirm">Sí, cerrar sesión</button>
+            </form>
+            <button class="modal-btn cancel" onclick="cerrarLogoutModal()">Cancelar</button>
+        </div>
+    </div>
+</div>
+    <script>
+function cerrarAlertaModal() {
+    document.getElementById('alerta-modal-bg').classList.remove('active');
+    document.body.style.overflow = '';
+}
+document.addEventListener('DOMContentLoaded', function() {
+    const alerta = document.getElementById('alerta-modal-bg');
+    if (alerta) {
+        alerta.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    document.addEventListener('keydown', function(e) {
+        if (e.key === "Escape" && alerta && alerta.classList.contains('active')) cerrarAlertaModal();
+    });
+});
+function abrirLogoutModal() {
+    document.getElementById('logout-modal-bg').classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+function cerrarLogoutModal() {
+    document.getElementById('logout-modal-bg').classList.remove('active');
+    document.body.style.overflow = '';
+}
+document.addEventListener('DOMContentLoaded', function() {
+    const logoutLinks = Array.from(document.querySelectorAll('a[href="{{ url_for("logout") }}"]'));
+    logoutLinks.forEach(function(logoutLink) {
+        logoutLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            abrirLogoutModal();
+        });
+    });
+    document.addEventListener('keydown', function(e) {
+        if (e.key === "Escape") cerrarLogoutModal();
+    });
+});
+</script>
+</body>
+</html>

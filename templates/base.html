@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AgronoMia{% endblock %}</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            background: linear-gradient(120deg, #181a1b 0%, #232526 100%);
+            color: #f5f5f7;
+            backdrop-filter: blur(0px);
+        }
+        nav {
+            background: rgba(24, 26, 27, 0.85);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 70px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        nav a {
+            color: #f5f5f7;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1em;
+            margin: 0 18px;
+            padding: 10px 18px;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+        }
+        nav a:hover {
+            background: rgba(255,255,255,0.08);
+            color: #00e6b0;
+        }
+        .content {
+            width: 100%;
+            max-width: 1100px;
+            margin: 40px auto 0 auto;
+            padding: 0 24px 40px 24px;
+        }
+        footer {
+            background: rgba(24, 26, 27, 0.85);
+            color: #aaa;
+            text-align: center;
+            padding: 18px 0 10px 0;
+            font-size: 1em;
+            letter-spacing: 1px;
+            margin-top: 40px;
+            border-top: 1px solid #222;
+        }
+        .cart-badge {
+            background:#00e6b0;
+            color:#181a1b;
+            border-radius:50%;
+            padding:2px 8px;
+            font-size:0.95em;
+            margin-left:4px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('inicio') }}">
+            <img src="{{ url_for('static', filename='images/mercado.png') }}" alt="Mercado" style="height:28px;vertical-align:middle;margin-right:8px;">
+            Mercado
+        </a>
+        <a href="{{ url_for('productores') }}">
+            <img src="{{ url_for('static', filename='images/productores.png') }}" alt="Productores" style="height:28px;vertical-align:middle;margin-right:8px;">
+            Productores
+        </a>
+        <a href="{{ url_for('contacto') }}">
+            <img src="{{ url_for('static', filename='images/contacto.png') }}" alt="Contacto" style="height:28px;vertical-align:middle;margin-right:8px;">
+            Contacto
+        </a>
+        <a href="{{ url_for('carrito') }}">
+            <img src="{{ url_for('static', filename='images/carrito.png') }}" alt="Carrito" style="height:28px;vertical-align:middle;margin-right:8px;">
+            Carrito
+            {% if session.get('cart_count') %}
+                <span class="cart-badge">{{ session['cart_count'] }}</span>
+            {% endif %}
+        </a>
+        {% if session.get('usuario_id') %}
+            <a href="{{ url_for('perfil') }}">
+                <img src="{{ url_for('static', filename='images/user.png') }}" alt="Mi Cuenta" style="height:28px;vertical-align:middle;margin-right:8px;">
+                Mi Cuenta
+            </a>
+            <a href="{{ url_for('logout') }}" style="color:#ff5c5c;">
+                <img src="{{ url_for('static', filename='images/logout.png') }}" alt="Cerrar Sesión" style="height:28px;vertical-align:middle;margin-right:8px;">
+                Cerrar Sesión
+            </a>
+        {% else %}
+            <a href="{{ url_for('login') }}">
+                <img src="{{ url_for('static', filename='images/login.png') }}" alt="Iniciar Sesión" style="height:28px;vertical-align:middle;margin-right:8px;">
+                Iniciar Sesión
+            </a>
+        {% endif %}
+    </nav>
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+    <footer>
+        <p>© 2025 AgronoMia - Todos los derechos reservados</p>
+    </footer>
+</body>
+</html>

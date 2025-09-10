@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Enviar Mensaje | AgronoMia</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            min-height: 100vh;
+            background: url('{{ url_for("static", filename="images/ap5.jpg") }}') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+        }
+        nav {
+            background-color: #2E7D32;
+            padding: 18px 0;
+            text-align: center;
+            box-shadow: 0px 4px 8px rgba(0,0,0,0.18);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+            letter-spacing: 1px;
+        }
+        .container { 
+            max-width: 500px; 
+            margin: 40px auto; 
+            background: #fff; 
+            border-radius: 16px; 
+            padding: 35px; 
+            box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+        }
+        h2 { color: #2E7D32; margin-bottom: 28px; }
+        label { display: block; margin-top: 15px; font-weight: bold; color: #2E7D32; text-align: left; }
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border: 1.5px solid #2E7D32;
+            border-radius: 8px;
+            font-size: 1em;
+            resize: vertical;
+        }
+        .boton-enviar {
+            display: block;
+            width: 100%;
+            background-color: #FFD700;
+            color: #2E7D32;
+            font-size: 1.1em;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 20px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+        }
+        .boton-enviar:hover { background-color: #FFC107; }
+        .volver-btn {
+            display: inline-block;
+            margin-top: 24px;
+            background: #2E7D32;
+            color: white;
+            padding: 8px 22px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .volver-btn:hover { background: #388e3c; }
+        .flash-success {
+            background: #e8f5e9;
+            color: #2E7D32;
+            padding: 10px 0;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        .flash-danger {
+            background: #ffebee;
+            color: #c62828;
+            padding: 10px 0;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        footer {
+            background-color: #2E7D32;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            margin-top: auto;
+            border-radius: 0;
+            font-family: inherit;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        Enviar Mensaje
+    </nav>
+    <div class="container">
+        <h2>📝 Enviar Mensaje al Administrador</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        <form action="{{ url_for('enviar_mensaje_productor') }}" method="POST">
+            <label>Mensaje:</label>
+            <textarea name="mensaje" rows="5" required placeholder="Escribe tu mensaje aquí..."></textarea>
+            <button type="submit" class="boton-enviar">Enviar Mensaje</button>
+        </form>
+        <a href="{{ url_for('panel_productor') }}" class="volver-btn">Volver al panel</a>
+    </div>
+    <footer>
+        <p>© 2025 AgronoMia - Todos los derechos reservados</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgronoMia - Productos</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo4.css') }}">
+    <style>
+        /* Estilos para el modal de cierre de sesión */
+        #logout-modal-bg {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0; top: 0; right: 0; bottom: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(24, 26, 27, 0.55);
+            backdrop-filter: blur(8px);
+            justify-content: center;
+            align-items: center;
+            transition: background 0.3s;
+        }
+        #logout-modal-bg.active {
+            display: flex;
+        }
+        #logout-modal {
+            background: rgba(24, 26, 27, 0.92);
+            border-radius: 18px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+            padding: 48px 38px 36px 38px;
+            text-align: center;
+            max-width: 370px;
+            width: 90vw;
+            color: #f5f5f7;
+            animation: fadeInModal 0.4s;
+        }
+        #logout-modal h2 {
+            color: #00e6b0;
+            font-size: 2em;
+            margin-bottom: 18px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+        #logout-modal p {
+            font-size: 1.15em;
+            margin-bottom: 32px;
+            color: #e0f7fa;
+        }
+        #logout-modal .modal-btns {
+            display: flex;
+            justify-content: center;
+            gap: 22px;
+        }
+        #logout-modal .modal-btn {
+            padding: 12px 32px;
+            border-radius: 8px;
+            border: none;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, transform 0.15s;
+        }
+        #logout-modal .modal-btn.confirm {
+            background: #00e6b0;
+            color: #181a1b;
+        }
+        #logout-modal .modal-btn.confirm:hover {
+            background: #00b88a;
+            color: #fff;
+            transform: scale(1.04);
+        }
+        #logout-modal .modal-btn.cancel {
+            background: #232526;
+            color: #e0e0e0;
+            border: 1.5px solid #444;
+        }
+        #logout-modal .modal-btn.cancel:hover {
+            background: #181a1b;
+            color: #00e6b0;
+            transform: scale(1.04);
+        }
+        @keyframes fadeInModal {
+            from { opacity: 0; transform: scale(0.97);}
+            to { opacity: 1; transform: scale(1);}
+        }
+        
+        /* Estilos generales */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1a1d1e;
+            color: #e8e6e3;
+        }
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #232526;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        .nav-left, .nav-right {
+            display: flex;
+            gap: 1.5rem;
+        }
+        nav a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #00e6b0;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+        nav a:hover {
+            background-color: #2e3234;
+        }
+        nav img {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+        h2 {
+            color: #00e6b0;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2.2rem;
+        }
+        h3 {
+            color: #00e6b0;
+            border-bottom: 2px solid #00b88a;
+            padding-bottom: 0.5rem;
+            margin-top: 2.5rem;
+        }
+        .productos-lista {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .producto-item {
+            background: linear-gradient(145deg, #232526, #2c2f31);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .producto-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+        .producto-item img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        .producto-item p {
+            margin: 0.5rem 0;
+            line-height: 1.5;
+        }
+        .boton-carrito {
+            background-color: #00e6b0;
+            color: #181a1b;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 1rem;
+            transition: background-color 0.3s;
+        }
+        .boton-carrito:hover {
+            background-color: #00b88a;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            background-color: #232526;
+            color: #e8e6e3;
+        }
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .toast {
+            padding: 1rem 1.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 6px;
+            color: white;
+            animation: fadeIn 0.3s;
+        }
+        .toast-success {
+            background-color: #28a745;
+        }
+        .toast-error {
+            background-color: #dc3545;
+        }
+        .toast-warning {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div id="toast-container">
+          {% for category, message in messages %}
+            <div class="toast toast-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+
+    <nav>
+        <div class="nav-left">
+            <!-- Mostrar Inicio solo para clientes -->
+            {% if not es_productor %}
+            <a href="{{ url_for('inicio') }}">
+                <img src="{{ url_for('static', filename='images/inicio.png') }}" alt="Inicio">Inicio
+            </a>
+            {% endif %}
+            
+            <a href="{{ url_for('productores') }}">
+                <img src="{{ url_for('static', filename='images/productor.png') }}" alt="Productores">Productores
+            </a>
+            <a href="{{ url_for('contacto') }}">
+                <img src="{{ url_for('static', filename='images/contacto.png') }}" alt="Contacto">Contacto
+            </a>
+        </div>
+        <div class="nav-right">
+            <!-- Mostrar Carrito y Mi Cuenta solo para clientes -->
+            {% if not es_productor %}
+            <a href="{{ url_for('carrito') }}">
+                <img src="{{ url_for('static', filename='images/carrito.png') }}" alt="Carrito">Carrito
+                {% if cantidad_carrito and cantidad_carrito > 0 %}
+                    <span style="background:#00e6b0;color:#181a1b;padding:2px 8px;border-radius:12px;font-weight:bold;margin-left:4px;">
+                        {{ cantidad_carrito }}
+                    </span>
+                {% endif %}
+            </a>
+            <a href="{{ url_for('panel_cliente') }}">
+                <img src="{{ url_for('static', filename='images/perfil.png') }}" alt="Mi Cuenta">Mi Cuenta
+            </a>
+            {% endif %}
+            
+            <!-- Mostrar Panel de Productor solo para productores -->
+            {% if es_productor %}
+            <a href="{{ url_for('panel_productor') }}">
+                <img src="{{ url_for('static', filename='images/panel.png') }}" alt="Panel de Productor">Panel de Productor
+            </a>
+            {% endif %}
+            
+            <a href="#" id="logout-link">
+                <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar">Cerrar Sesión
+            </a>
+        </div>
+    </nav>
+
+    <div id="logout-modal-bg">
+        <div id="logout-modal">
+            <h2>¿Cerrar sesión?</h2>
+            <p>¿Estás seguro de que deseas cerrar tu sesión?<br>Puedes continuar navegando si lo prefieres.</p>
+            <div class="modal-btns">
+                <form id="logout-form" action="{{ url_for('logout') }}" method="get" style="display:inline;">
+                    <button type="submit" class="modal-btn confirm">Sí, cerrar sesión</button>
+                </form>
+                <button class="modal-btn cancel" onclick="cerrarLogoutModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>🌿 Productos por Categoría</h2>
+
+        {% for categoria in categorias %}
+            <h3>{{ categoria.nombre }}</h3>
+            <div class="productos-lista">
+                {% for producto in productos %}
+                    {% if producto.categoria_id == categoria.id %}
+                        <div class="producto-item">
+                            <img src="{{ url_for('static', filename='images/' + producto.imagen) }}" alt="{{ producto.nombre }}">
+                            <p><strong>{{ producto.nombre }}</strong></p>
+                            <p>Descripción: {{ producto.descripcion }}</p>
+                            <p>Precio: ${{ producto.precio }}</p>
+                            <p>Productor: {{ producto.productor.nombre }}</p>
+
+                            <!-- Mostrar botón de carrito solo para clientes -->
+                            {% if not es_productor %}
+                            <form action="{{ url_for('agregar_carrito', producto_id=producto.id) }}" method="POST">
+                                <button class="boton-carrito" type="submit">🛒 Agregar al carrito</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <footer>
+        <p>© 2025 AgronoMia - Todos los derechos reservados</p>
+    </footer>
+
+    <script>
+        // Funciones para el modal de cierre de sesión
+        function abrirLogoutModal() {
+            document.getElementById('logout-modal-bg').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function cerrarLogoutModal() {
+            document.getElementById('logout-modal-bg').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoutLink = document.getElementById('logout-link');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    abrirLogoutModal();
+                });
+            }
+            document.addEventListener('keydown', function(e) {
+                if (e.key === "Escape") cerrarLogoutModal();
+            });
+            
+            // Eliminar mensajes después de 3 segundos
+            setTimeout(() => {
+                const toast = document.getElementById('toast-container');
+                if (toast) toast.remove();
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

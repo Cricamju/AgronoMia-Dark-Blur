@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Usuarios | AgronoMia</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;700&display=swap');
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: url('{{ url_for("static", filename="images/background-prod.png") }}') no-repeat center center fixed;
+            background-size: cover;
+            color: #f5f5f7;
+        }
+        nav {
+            background: rgba(24, 26, 27, 0.70);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 0 32px;
+        }
+        .nav-left, .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        nav a {
+            color: #f5f5f7;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 10px 18px;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.5px;
+        }
+        nav a img {
+            height: 32px;
+            width: 32px;
+            vertical-align: middle;
+        }
+        nav a:hover {
+            background: rgba(255,255,255,0.08);
+            color: #00e6b0;
+        }
+        .container {
+            max-width: 1300px;
+            width: 100%;
+            margin: 90px auto 40px;
+            background: rgba(24, 26, 27, 0.70);
+            backdrop-filter: blur(10px);
+            padding: 38px 28px 28px 28px;
+            border-radius: 26px;
+            box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.25);
+            flex: 1;
+            font-family: inherit;
+        }
+        h2 {
+            color: #00e6b0;
+            margin-bottom: 28px;
+            font-size: 2em;
+            font-family: inherit;
+            letter-spacing: 1px;
+            font-weight: 800;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.25);
+        }
+        table {
+            width: 100%;
+            min-width: 1000px;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: rgba(24, 26, 27, 0.92);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,230,176,0.10);
+        }
+        th, td {
+            padding: 14px 10px;
+            border-bottom: 1px solid #233;
+            text-align: left;
+            font-size: 1em;
+        }
+        th {
+            background-color: #00b88a;
+            color: #181a1b;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        td {
+            color: #e0f7fa;
+        }
+        .btn-delete {
+            background: #e6004c;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s, color 0.2s;
+        }
+        .btn-delete:hover {
+            background: #b71c1c;
+            color: #fff;
+        }
+        .btn-edit {
+            background: #00e6b0;
+            color: #181a1b;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-left: 8px;
+            transition: background 0.2s, color 0.2s;
+        }
+        .btn-edit:hover {
+            background: #00b88a;
+            color: #fff;
+        }
+        .btn-save {
+            background: #00b88a;
+            color: #181a1b;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s, color 0.2s;
+        }
+        .btn-save:hover {
+            background: #00e6b0;
+            color: #fff;
+        }
+        .btn-cancel {
+            background: #222;
+            color: #eee;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s, color 0.2s;
+        }
+        .btn-cancel:hover {
+            background: #333;
+            color: #00e6b0;
+        }
+        footer {
+            background: rgba(24, 26, 27, 0.70);
+            color: #aaa;
+            text-align: center;
+            padding: 18px 0 10px 0;
+            font-size: 1em;
+            letter-spacing: 1px;
+            margin-top: auto;
+            border-top: 1px solid #222;
+            box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
+            font-family: inherit;
+        }
+        @media (max-width: 1400px) {
+            .container {
+                max-width: 98vw;
+                padding: 12px 2vw 18px 2vw;
+            }
+        }
+        @media (max-width: 1000px) {
+            .container {
+                max-width: 98vw;
+                padding: 12px 4vw 18px 4vw;
+            }
+            nav {
+                flex-direction: column;
+                height: auto;
+                padding: 10px 5px;
+            }
+            .nav-left, .nav-right {
+                flex-direction: column;
+                gap: 10px;
+            }
+            table, th, td {
+                font-size: 0.95em;
+            }
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin: 90px 1vw 20px 1vw;
+                padding: 5px;
+            }
+            table, th, td {
+                font-size: 0.9em;
+            }
+        }
+        .edit-form input, .edit-form select {
+            font-size: 1em;
+            margin-bottom: 0;
+        }
+   
+        #toast-blur {
+            position: fixed;
+            bottom: 32px;
+            right: 32px;
+            z-index: 9999;
+            display: none;
+            min-width: 260px;
+        }
+        .toast-blur-msg {
+            background: rgba(24,26,27,0.92);
+            color: #f5f5f7;
+            border-radius: 14px;
+            box-shadow: 0 4px 24px rgba(0,230,176,0.13);
+            padding: 18px 32px;
+            font-size: 1.08em;
+            font-weight: 600;
+            margin-bottom: 8px;
+            border-left: 6px solid #00e6b0;
+            opacity: 0.97;
+            transition: opacity 0.5s;
+            display: inline-block;
+        }
+        .toast-blur-msg.success { border-left-color: #00e6b0; }
+        .toast-blur-msg.error   { border-left-color: #e6004c; }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-left">
+            <a href="{{ url_for('panel_productor') }}">
+                <img src="{{ url_for('static', filename='images/inicio.png') }}" alt="Panel Productor">
+                Panel Productor
+            </a>
+        </div>
+        <div class="nav-right">
+            <a href="#" id="logout-link">
+                <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar Sesión">
+                Cerrar Sesión
+            </a>
+        </div>
+    </nav>
+    <div class="container">
+        <h2>👥 Gestión de Usuarios</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Contraseña</th>
+                    <th>Tipo</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for usuario in usuarios %}
+                <tr id="usuario-row-{{ usuario.id }}">
+                    <td>{{ usuario.id }}</td>
+                    <td>{{ usuario.nombre }}</td>
+                    <td>{{ usuario.email }}</td>
+                    <td>{{ usuario.password }}</td>
+                    <td>{{ usuario.tipo_usuario }}</td>
+                    <td style="white-space:nowrap;">
+                        <form action="{{ url_for('eliminar_usuario', user_id=usuario.id) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="btn-delete">❌ Eliminar</button>
+                        </form>
+                        <button type="button" class="btn-edit" onclick="mostrarEditar({{ usuario.id }}, '{{ usuario.nombre }}', '{{ usuario.email }}', '{{ usuario.password }}', '{{ usuario.tipo_usuario }}')">✏️ Editar</button>
+                    </td>
+                </tr>
+                <tr id="edit-row-{{ usuario.id }}" style="display:none;background:rgba(24,26,27,0.92);">
+                    <td colspan="6">
+                        <form class="edit-form" action="{{ url_for('editar_usuario', user_id=usuario.id) }}" method="POST" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;">
+                            <input type="text" name="nombre" value="{{ usuario.nombre }}" placeholder="Nombre" required style="border-radius:7px;padding:8px 12px;border:1.5px solid #00e6b0;background:#181a1b;color:#f5f5f7;">
+                            <input type="email" name="email" value="{{ usuario.email }}" placeholder="Email" required style="border-radius:7px;padding:8px 12px;border:1.5px solid #00e6b0;background:#181a1b;color:#f5f5f7;">
+                            <input type="text" name="password" value="{{ usuario.password }}" placeholder="Contraseña" required style="border-radius:7px;padding:8px 12px;border:1.5px solid #00e6b0;background:#181a1b;color:#f5f5f7;">
+                            <select name="tipo_usuario" style="border-radius:7px;padding:8px 12px;border:1.5px solid #00e6b0;background:#181a1b;color:#f5f5f7;">
+                                <option value="Cliente" {% if usuario.tipo_usuario == 'Cliente' %}selected{% endif %}>Cliente</option>
+                                <option value="Productor" {% if usuario.tipo_usuario == 'Productor' %}selected{% endif %}>Productor</option>
+                            </select>
+                            <button type="submit" class="btn-save">💾 Guardar</button>
+                            <button type="button" class="btn-cancel" onclick="ocultarEditar({{ usuario.id }})">Cancelar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div id="toast-blur" style="position:fixed;bottom:32px;right:32px;z-index:9999;display:none;min-width:260px;"></div>
+    <div id="logout-modal-bg" style="display:none;position:fixed;z-index:2000;left:0;top:0;right:0;bottom:0;width:100vw;height:100vh;background:rgba(24,26,27,0.55);backdrop-filter:blur(8px);justify-content:center;align-items:center;transition:background 0.3s;">
+        <div id="logout-modal" style="background:rgba(24,26,27,0.92);border-radius:18px;box-shadow:0 8px 32px rgba(0,0,0,0.28);padding:48px 38px 36px 38px;text-align:center;max-width:370px;width:90vw;color:#f5f5f7;">
+            <h2 style="color:#00e6b0;font-size:2em;margin-bottom:18px;font-weight:800;letter-spacing:1px;">¿Cerrar sesión?</h2>
+            <p style="font-size:1.15em;margin-bottom:32px;color:#e0f7fa;">¿Estás seguro de que deseas cerrar tu sesión?<br>Puedes continuar navegando si lo prefieres.</p>
+            <div style="display:flex;justify-content:center;gap:22px;">
+                <form id="logout-form" action="{{ url_for('logout') }}" method="get" style="display:inline;">
+                    <button type="submit" class="modal-btn confirm" style="background:#00e6b0;color:#181a1b;font-weight:600;border:none;border-radius:8px;padding:12px 18px;font-size:1em;box-shadow:0 2px 10px rgba(0,230,176,0.10);transition:background 0.2s,color 0.2s,transform 0.15s;cursor:pointer;">Sí, cerrar sesión</button>
+                </form>
+                <button class="modal-btn cancel" onclick="cerrarLogoutModal()" style="background:#232526;color:#e0e0e0;border:1.5px solid #444;border-radius:8px;padding:12px 18px;font-size:1em;font-weight:600;cursor:pointer;transition:background 0.2s,color 0.2s,transform 0.15s;">Cancelar</button>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>© 2025 AgronoMia - Todos los derechos reservados</p>
+    </footer>
+    <script>
+        function mostrarEditar(id, nombre, email, password, tipo) {
+      
+            document.querySelectorAll('tr[id^="edit-row-"]').forEach(tr => tr.style.display = 'none');
+            document.getElementById('edit-row-' + id).style.display = '';
+        }
+        function ocultarEditar(id) {
+            document.getElementById('edit-row-' + id).style.display = 'none';
+        }
+        function showToastBlur(message, type="success") {
+            const toast = document.getElementById('toast-blur');
+            toast.innerHTML = `<div class="toast-blur-msg ${type}">${message}</div>`;
+            toast.style.display = "block";
+            setTimeout(() => { toast.style.display = "none"; }, 3000);
+        }
+
+        function abrirLogoutModal() {
+            document.getElementById('logout-modal-bg').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+        function cerrarLogoutModal() {
+            document.getElementById('logout-modal-bg').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoutLink = document.getElementById('logout-link');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    abrirLogoutModal();
+                });
+            }
+            document.addEventListener('keydown', function(e) {
+                if (e.key === "Escape") cerrarLogoutModal();
+            });
+        });
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            window.onload = function() {
+              {% for category, message in messages %}
+                showToastBlur("{{ message }}", "{{ 'success' if category=='success' else 'error' }}");
+              {% endfor %}
+            }
+          {% endif %}
+        {% endwith %}
+    </script>
+</body>
+</html>

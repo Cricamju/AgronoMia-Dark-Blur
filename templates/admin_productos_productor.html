@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrar Productos | AgronoMia</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo10.css') }}">
+</head>
+<body>
+    <nav>
+        <div class="nav-left">
+            <a href="{{ url_for('panel_productor') }}">
+                <img src="{{ url_for('static', filename='images/inicio.png') }}" alt="Panel Productor">
+                Panel Productor
+            </a>
+        </div>
+        <div class="nav-right">
+            <a href="{{ url_for('logout') }}" id="logout-link">
+                <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar Sesión">
+                Cerrar Sesión
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>🛒 Administrar Mis Productos</h2>
+        <div class="productos-flex">
+            <div class="col-form">
+                <div class="formulario-producto-nueva">
+                    <div class="panel-card-icon perfil-icon">➕</div>
+                    <h3 class="registro-title">Agregar producto</h3>
+                    <form class="formulario" action="{{ url_for('agregar_producto') }}" method="POST" enctype="multipart/form-data">
+                        <label for="nombre">Nombre del producto:</label>
+                        <input type="text" id="nombre" name="nombre" placeholder="Nombre del producto" required>
+
+                        <label for="descripcion">Descripción:</label>
+                        <textarea id="descripcion" name="descripcion" placeholder="Descripción" required></textarea>
+
+                        <label for="precio">Precio:</label>
+                        <input type="number" id="precio" name="precio" placeholder="Precio" step="0.01" min="0" required>
+
+                        <label for="categoria_id">Categoría:</label>
+                        <select id="categoria_id" name="categoria_id" required>
+                            {% for categoria in categorias %}
+                                <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <label for="imagen">Imagen:</label>
+                        <input type="file" id="imagen" name="imagen" accept="image/*">
+
+                        <button type="submit">Subir Producto</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lista">
+                <div class="productos-lista">
+                    {% if productos %}
+                        {% for producto in productos %}
+                        <div class="producto-item">
+                            <img src="{{ url_for('static', filename='images/' + producto.imagen) }}" alt="{{ producto.nombre }}">
+                            <div class="producto-info">
+                                <strong>{{ producto.nombre }}</strong>
+                                <p>${{ producto.precio }}</p>
+                                <p>{{ producto.descripcion }}</p>
+                                <p style="font-size:0.95em;color:#00e6b0;">{{ producto.categoria.nombre if producto.categoria else "Sin categoría" }}</p>
+                            </div>
+                            <div class="producto-actions">
+                                <form action="{{ url_for('desactivar_producto', producto_id=producto.id) }}" method="post">
+                                    <button type="submit">Eliminar</button>
+                                </form>
+                                <a href="{{ url_for('actualizar_producto', producto_id=producto.id) }}">
+                                    Actualizar
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p>No hay productos disponibles.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <p>© 2025 AgronoMia - Todos los derechos reservados</p>
+    </footer>
+
+    <div id="toast-container"></div>
+    <script>
+    function showToast(message, type="success") {
+        const toastContainer = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        toast.className = 'toast toast-' + type;
+        toast.innerText = message;
+        toastContainer.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 500);
+        }, 3000);
+    }
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        showToast("{{ message }}", "{{ 'success' if category == 'success' else 'error' }}");
+      {% endfor %}
+    {% endwith %}
+    </script>
+
+    <div id="logout-modal-bg">
+        <div id="logout-modal">
+            <h2>¿Cerrar sesión?</h2>
+            <p>¿Estás seguro de que deseas cerrar tu sesión?<br>Puedes continuar navegando si lo prefieres.</p>
+            <div class="modal-btns">
+                <form id="logout-form" action="{{ url_for('logout') }}" method="get" style="display:inline;">
+                    <button type="submit" class="modal-btn confirm">Sí, cerrar sesión</button>
+                </form>
+                <button class="modal-btn cancel" onclick="cerrarLogoutModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+    <script>
+    function abrirLogoutModal() {
+        document.getElementById('logout-modal-bg').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function cerrarLogoutModal() {
+        document.getElementById('logout-modal-bg').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        const logoutLink = document.getElementById('logout-link');
+        if (logoutLink) {
+            logoutLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                abrirLogoutModal();
+            });
+        }
+        // Cerrar modal con ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === "Escape") cerrarLogoutModal();
+        });
+    });
+    </script>
+</body>
+</html>
