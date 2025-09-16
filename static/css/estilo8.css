@@ -3,22 +3,24 @@
         }
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: url('../images/background.jpg') no-repeat center center fixed;
+            background: url('../images/verduras.jpg') no-repeat center center fixed;
             background-size: cover;
+            margin: 0;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
         }
 
              nav {
     background-color: #2E7D32;
-    padding: 15px;
+    padding: 15px 30px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 .nav-left, .nav-right {
     display: flex;
@@ -31,8 +33,9 @@ nav a {
     font-weight: bold;
     padding: 12px 18px;
     border-radius: 8px;
-    transition: all 0.3s ease-in-out;
+    transition: all 0.3s;
     font-size: 1em;
+    font-family: inherit;
     display: flex;
     align-items: center;
     gap: 8px;
@@ -48,22 +51,129 @@ nav a:hover {
 }
 
         .container {
-            max-width: 900px;
-            margin: auto;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
-            text-align: center;
+            max-width: 800px; /* Increased max-width */
+    width: 95%; /* Use a percentage for responsiveness */
+    margin: 40px auto; /* Reduced top margin */
+    background: rgba(255,255,255,0.97);
+    border-radius: 16px;
+    box-shadow: 0 4px 18px rgba(46,125,50,0.18);
+    padding: 36px 32px 28px 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1; /* Allow container to grow and take available space */
         }
 
         footer {
             background-color: #2E7D32;
             color: white;
             text-align: center;
-            padding: 15px;
-            margin-top: auto;
+            padding: 18px 0;
+            width: 100%;
+            position: relative; /* Changed to relative */
+            bottom: 0;
+            z-index: 999;
+            font-size: 1em;
+            margin-top: auto; /* Push footer to the bottom */
         }
         h1 {
             color: #2E7D32;
         }
+        h2 {
+    color: #2E7D32;
+    margin-bottom: 28px;
+    text-align: center;
+}
+.producto-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.producto-item {
+    width: 90%;
+    background: #f9f9f9;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(46,125,50,0.1);
+    text-align: center;
+}
+.producto-item img {
+    max-width: 150px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+.producto-item p {
+    margin-bottom: 8px;
+}
+.producto-item strong {
+    color: #2E7D32;
+}
+.producto-item form, .producto-item a {
+    display: inline-block;
+    margin: 5px;
+}
+.producto-item button {
+    background: #D32F2F;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+.producto-item button:hover {
+    background: #b71c1c;
+}
+a.actualizar-btn {
+    background: #FFD700;
+    color: #2E7D32;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+}
+a.actualizar-btn:hover {
+    background: #FFC107;
+    color: #1B5E20;
+}
+.agregar-producto {
+    text-align: right;
+    width: 100%;
+    margin-bottom: 20px;
+}
+.agregar-producto a {
+    background: #2E7D32;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+.agregar-producto a:hover {
+    background: #1B5E20;
+}
+@media (max-width: 600px) {
+    nav {
+        flex-direction: column;
+        height: auto;
+        padding: 10px 5px;
+    }
+    .nav-left, .nav-right {
+        flex-direction: column;
+        gap: 10px;
+    }
+    .container {
+        max-width: 98vw;
+        padding: 12px 4vw 18px 4vw;
+        margin-top: 120px;
+        margin-bottom: 80px;
+    }
+    .producto-item {
+        width: 100%;
+    }
+}
