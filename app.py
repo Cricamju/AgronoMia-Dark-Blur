@@ -181,9 +181,19 @@ def productos():
     productos = Producto.query.filter_by(activo=True).all()
     categorias = Categoria.query.all()
     cantidad_carrito = 0
-    if 'usuario_id' in session and session.get('tipo_usuario') == 'Cliente':
+    
+    # Obtener el tipo de usuario de la sesión
+    tipo_usuario = session.get('tipo_usuario', None)
+
+    # Calcular la cantidad del carrito solo si el usuario es un Cliente
+    if tipo_usuario == 'Cliente' and 'usuario_id' in session:
         cantidad_carrito = db.session.query(db.func.sum(Carrito.cantidad)).filter_by(usuario_id=session['usuario_id']).scalar() or 0
-    return render_template('productos.html', productos=productos, categorias=categorias, cantidad_carrito=cantidad_carrito)
+    
+    return render_template('productos.html', 
+                           productos=productos, 
+                           categorias=categorias, 
+                           cantidad_carrito=cantidad_carrito,
+                           tipo_usuario=tipo_usuario) # Pasar el rol a la plantilla
 
 @app.route('/contacto')
 def contacto():

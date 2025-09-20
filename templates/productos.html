@@ -102,6 +102,7 @@
         .nav-left, .nav-right {
             display: flex;
             gap: 1.5rem;
+            align-items: center;
         }
         nav a {
             display: flex;
@@ -150,6 +151,8 @@
             padding: 1.5rem;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
             transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
         }
         .producto-item:hover {
             transform: translateY(-5px);
@@ -161,6 +164,9 @@
             object-fit: cover;
             border-radius: 8px;
             margin-bottom: 1rem;
+        }
+        .producto-item .producto-info {
+            flex-grow: 1;
         }
         .producto-item p {
             margin: 0.5rem 0;
@@ -201,21 +207,13 @@
             color: white;
             animation: fadeIn 0.3s;
         }
-        .toast-success {
-            background-color: #28a745;
-        }
-        .toast-error {
-            background-color: #dc3545;
-        }
-        .toast-warning {
-            background-color: #ffc107;
-            color: #212529;
-        }
+        .toast-success { background-color: #28a745; }
+        .toast-error { background-color: #dc3545; }
+        .toast-warning { background-color: #ffc107; color: #212529; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        /* Styles for search bar */
         .search-container {
             display: flex;
             justify-content: center;
@@ -234,7 +232,6 @@
             border-color: #00e6b0;
             outline: none;
         }
-        /* Styles for category buttons */
         .category-buttons {
             display: flex;
             justify-content: center;
@@ -255,6 +252,41 @@
             background-color: #00e6b0;
             color: #181a1b;
         }
+        /* Estilos para botones de Admin */
+        .admin-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 1rem;
+        }
+        .admin-actions a, .admin-actions button {
+            flex: 1;
+            padding: 0.7rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s, transform 0.2s;
+            font-size: 0.9em;
+        }
+        .boton-actualizar {
+            background-color: #ffc107; /* Amarillo */
+            color: #181a1b;
+            border: none;
+        }
+        .boton-actualizar:hover {
+            background-color: #e0a800;
+            transform: scale(1.03);
+        }
+        .boton-eliminar {
+            background-color: #dc3545; /* Rojo */
+            color: white;
+            border: none;
+        }
+        .boton-eliminar:hover {
+            background-color: #c82333;
+            transform: scale(1.03);
+        }
     </style>
 </head>
 <body>
@@ -270,13 +302,9 @@
 
     <nav>
         <div class="nav-left">
-            <!-- Mostrar Inicio solo para clientes -->
-            {% if not es_productor %}
             <a href="{{ url_for('inicio') }}">
                 <img src="{{ url_for('static', filename='images/inicio.png') }}" alt="Inicio">Inicio
             </a>
-            {% endif %}
-            
             <a href="{{ url_for('productores') }}">
                 <img src="{{ url_for('static', filename='images/productor.png') }}" alt="Productores">Productores
             </a>
@@ -285,31 +313,37 @@
             </a>
         </div>
         <div class="nav-right">
-            <!-- Mostrar Carrito y Mi Cuenta solo para clientes -->
-            {% if not es_productor %}
-            <a href="{{ url_for('carrito') }}">
-                <img src="{{ url_for('static', filename='images/carrito.png') }}" alt="Carrito">Carrito
-                {% if cantidad_carrito and cantidad_carrito > 0 %}
-                    <span style="background:#00e6b0;color:#181a1b;padding:2px 8px;border-radius:12px;font-weight:bold;margin-left:4px;">
-                        {{ cantidad_carrito }}
-                    </span>
-                {% endif %}
-            </a>
-            <a href="{{ url_for('panel_cliente') }}">
-                <img src="{{ url_for('static', filename='images/perfil.png') }}" alt="Mi Cuenta">Mi Cuenta
-            </a>
+            {% if tipo_usuario == 'Cliente' %}
+                <a href="{{ url_for('carrito') }}">
+                    <img src="{{ url_for('static', filename='images/carrito.png') }}" alt="Carrito">Carrito
+                    {% if cantidad_carrito and cantidad_carrito > 0 %}
+                        <span style="background:#00e6b0;color:#181a1b;padding:2px 8px;border-radius:12px;font-weight:bold;margin-left:4px;">
+                            {{ cantidad_carrito }}
+                        </span>
+                    {% endif %}
+                </a>
+                <a href="{{ url_for('panel_cliente') }}">
+                    <img src="{{ url_for('static', filename='images/perfil.png') }}" alt="Mi Cuenta">Mi Cuenta
+                </a>
+            {% elif tipo_usuario == 'Administrador' %}
+                <a href="{{ url_for('panel_admin') }}">
+                    <img src="{{ url_for('static', filename='images/admin.png') }}" alt="Panel Admin">Panel Admin
+                </a>
+            {% elif tipo_usuario == 'Productor' %}
+                <a href="{{ url_for('panel_productor') }}">
+                    <img src="{{ url_for('static', filename='images/panel.png') }}" alt="Panel Productor">Panel Productor
+                </a>
             {% endif %}
-            
-            <!-- Mostrar Panel de Productor solo para productores -->
-            {% if es_productor %}
-            <a href="{{ url_for('panel_productor') }}">
-                <img src="{{ url_for('static', filename='images/panel.png') }}" alt="Panel de Productor">Panel de Productor
-            </a>
+
+            {% if tipo_usuario %}
+                <a href="#" id="logout-link">
+                    <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar">Cerrar Sesión
+                </a>
+            {% else %}
+                 <a href="{{ url_for('login') }}">
+                    <img src="{{ url_for('static', filename='images/perfil.png') }}" alt="Login">Iniciar Sesión
+                </a>
             {% endif %}
-            
-            <a href="#" id="logout-link">
-                <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar">Cerrar Sesión
-            </a>
         </div>
     </nav>
 
@@ -327,45 +361,48 @@
     </div>
 
     <div class="container">
-        <h2>🌿 Productos por Categoría</h2>
+        <h2>🌿 Nuestros Productos</h2>
 
-        <!-- Search Bar -->
         <div class="search-container">
             <input type="text" id="search-input" class="search-input" placeholder="Buscar productos...">
         </div>
 
-        <!-- Category Buttons -->
         <div class="category-buttons">
-            <button class="category-button" data-category="all">Todos</button>
+            <button class="category-button active" data-category="all">Todos</button>
             {% for categoria in categorias %}
                 <button class="category-button" data-category="{{ categoria.id }}">{{ categoria.nombre }}</button>
             {% endfor %}
         </div>
 
         <div id="productos-container">
-        {% for categoria in categorias %}
-            <h3 class="categoria-titulo" data-category="{{ categoria.id }}">{{ categoria.nombre }}</h3>
-            <div class="productos-lista" data-category="{{ categoria.id }}">
+            <div class="productos-lista">
                 {% for producto in productos %}
-                    {% if producto.categoria_id == categoria.id %}
-                        <div class="producto-item" data-name="{{ producto.nombre|lower }}" data-description="{{ producto.descripcion|lower }}" data-category="{{ producto.categoria_id }}">
-                            <img src="{{ url_for('static', filename='images/' + producto.imagen) }}" alt="{{ producto.nombre }}">
+                    <div class="producto-item" data-name="{{ producto.nombre|lower }}" data-description="{{ producto.descripcion|lower }}" data-category="{{ producto.categoria_id }}">
+                        <img src="{{ url_for('static', filename='images/' + producto.imagen) if producto.imagen else url_for('static', filename='images/default.png') }}" alt="{{ producto.nombre }}">
+                        <div class="producto-info">
                             <p><strong>{{ producto.nombre }}</strong></p>
-                            <p>Descripción: {{ producto.descripcion }}</p>
-                            <p>Precio: ${{ producto.precio }}</p>
-                            <p>Productor: {{ producto.productor.nombre }}</p>
+                            <p>{{ producto.descripcion }}</p>
+                            <p>Precio: ${{ "%.2f"|format(producto.precio) }}</p>
+                            {% if producto.productor %}
+                                <p>Productor: {{ producto.productor.nombre }}</p>
+                            {% endif %}
+                        </div>
 
-                            <!-- Mostrar botón de carrito solo para clientes -->
-                            {% if not es_productor %}
+                        {% if tipo_usuario == 'Cliente' %}
                             <form action="{{ url_for('agregar_carrito', producto_id=producto.id) }}" method="POST">
                                 <button class="boton-carrito" type="submit">🛒 Agregar al carrito</button>
                             </form>
-                            {% endif %}
+                        {% elif tipo_usuario == 'Administrador' %}
+                            <div class="admin-actions">
+                                <a href="{{ url_for('actualizar_producto_admin', producto_id=producto.id) }}" class="boton-actualizar">✏️ Actualizar</a>
+                                <form action="{{ url_for('eliminar_producto_admin', producto_id=producto.id) }}" method="POST" style="margin: 0;">
+                                    <button type="submit" class="boton-eliminar" onclick="return confirm('¿Estás seguro de eliminar este producto? La acción es permanente.')">🗑️ Eliminar</button>
+                                </form>
+                            </div>
+                        {% endif %}
                         </div>
-                    {% endif %}
                 {% endfor %}
             </div>
-        {% endfor %}
         </div>
     </div>
 
@@ -383,6 +420,7 @@
             document.getElementById('logout-modal-bg').classList.remove('active');
             document.body.style.overflow = '';
         }
+
         document.addEventListener('DOMContentLoaded', function() {
             const logoutLink = document.getElementById('logout-link');
             if (logoutLink) {
@@ -395,75 +433,42 @@
                 if (e.key === "Escape") cerrarLogoutModal();
             });
             
-            // Eliminar mensajes después de 3 segundos
             setTimeout(() => {
                 const toast = document.getElementById('toast-container');
-                if (toast) toast.remove();
+                if (toast) toast.style.display = 'none';
             }, 3000);
 
-            // Search functionality
             const searchInput = document.getElementById('search-input');
-            const productosContainer = document.getElementById('productos-container');
-            
-            searchInput.addEventListener('input', function(e) {
-                const searchTerm = e.target.value.toLowerCase();
-                const productos = document.querySelectorAll('.producto-item');
+            const categoryButtons = document.querySelectorAll('.category-button');
+            const productos = document.querySelectorAll('.producto-item');
+
+            function filterProducts() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const activeCategory = document.querySelector('.category-button.active').dataset.category;
 
                 productos.forEach(producto => {
                     const name = producto.dataset.name;
                     const description = producto.dataset.description;
+                    const category = producto.dataset.category;
 
-                    if (name.includes(searchTerm) || description.includes(searchTerm)) {
-                        producto.style.display = 'block';
+                    const matchesSearch = name.includes(searchTerm) || description.includes(searchTerm);
+                    const matchesCategory = activeCategory === 'all' || category === activeCategory;
+
+                    if (matchesSearch && matchesCategory) {
+                        producto.style.display = 'flex';
                     } else {
                         producto.style.display = 'none';
                     }
                 });
+            }
 
-                 // Show/hide category titles based on product visibility
-                const categoryTitles = document.querySelectorAll('.categoria-titulo');
-                categoryTitles.forEach(title => {
-                    let categoryId = title.dataset.category;
-                    let hasVisibleProducts = false;
-                    productos.forEach(producto => {
-                        if (producto.dataset.category === categoryId && producto.style.display !== 'none') {
-                            hasVisibleProducts = true;
-                        }
-                    });
-
-                    title.style.display = hasVisibleProducts ? 'block' : 'none';
-                });
-            });
-
-            // Category filter functionality
-            const categoryButtons = document.querySelectorAll('.category-button');
+            searchInput.addEventListener('input', filterProducts);
 
             categoryButtons.forEach(button => {
                 button.addEventListener('click', function() {
-                    const category = this.dataset.category;
-                    const productos = document.querySelectorAll('.producto-item');
-                    const categoryTitles = document.querySelectorAll('.categoria-titulo');
-
-                    productos.forEach(producto => {
-                        if (category === 'all' || producto.dataset.category === category) {
-                            producto.style.display = 'block';
-                        } else {
-                            producto.style.display = 'none';
-                        }
-                    });
-
-                    // Show/hide category titles based on product visibility
-                    categoryTitles.forEach(title => {
-                        let categoryId = title.dataset.category;
-                        let hasVisibleProducts = false;
-                        productos.forEach(producto => {
-                            if (producto.dataset.category === categoryId && producto.style.display !== 'none') {
-                                hasVisibleProducts = true;
-                            }
-                        });
-
-                        title.style.display = hasVisibleProducts ? 'block' : 'none';
-                    });
+                    categoryButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    filterProducts();
                 });
             });
         });
