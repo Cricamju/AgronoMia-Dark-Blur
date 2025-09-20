@@ -11,24 +11,26 @@
             padding: 0;
         }
         body {
-            font-family: Arial, 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
             min-height: 100vh;
+            color: #f5f5f7;
+            background: url('{{ url_for("static", filename="images/background.jpg") }}') no-repeat center center fixed;
+            background-size: cover;
             display: flex;
             flex-direction: column;
-            background: url('{{ url_for("static", filename="images/verduras.jpg") }}') no-repeat center center fixed;
-            background-size: cover;
-            text-align: center;
         }
         nav {
-            background-color: #2E7D32;
-            padding: 15px 30px;
+            background: rgba(24, 26, 27, 0.65);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.25);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+            height: 70px;
             position: sticky;
             top: 0;
-            z-index: 1000;
+            z-index: 100;
+            padding: 0 32px;
         }
         .nav-left, .nav-right {
             display: flex;
@@ -36,57 +38,122 @@
             gap: 25px;
         }
         nav a {
-            color: white;
+            color: #f5f5f7;
             text-decoration: none;
-            font-weight: bold;
-            padding: 12px 18px;
+            font-weight: 500;
+            padding: 10px 18px;
             border-radius: 8px;
-            transition: all 0.3s;
-            font-size: 1em;
-            font-family: inherit;
+            transition: background 0.2s, color 0.2s;
+            font-size: 1.1em;
             display: flex;
             align-items: center;
             gap: 8px;
+            letter-spacing: 0.5px;
         }
         nav a img {
-            height: 32px;
-            width: 32px;
+            height: 28px;
+            width: 28px;
             vertical-align: middle;
         }
         nav a:hover {
-            background: rgba(255, 255, 255, 0.3);
-            color: #FFD700;
+            background: rgba(255,255,255,0.08);
+            color: #00e6b0;
         }
         .container {
-            max-width: 850px;
-            margin: 120px auto 40px;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.3);
-            flex: 1;
-            font-family: inherit;
+            flex: 1 0 auto;
+            max-width: 900px;
+            margin: 60px auto 40px auto;
+            background: rgba(24, 26, 27, 0.65);
+            backdrop-filter: blur(10px);
+            padding: 32px 60px 30px 60px;
+            border-radius: 18px;
+            box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.25);
+            text-align: center;
+            border: 1.5px solid rgba(0,230,176,0.13);
+        }
+        h2 {
+            color: #00e6b0;
+            margin-bottom: 28px;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.45);
         }
         .pedido-item {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 10px;
-            box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.2);
+            background: rgba(24, 26, 27, 0.82);
+            border-radius: 14px;
+            box-shadow: 0px 4px 18px rgba(0,0,0,0.18);
+            margin-bottom: 22px;
+            padding: 18px 22px;
+            text-align: left;
+            color: #f5f5f7;
+            border: 1px solid rgba(0,230,176,0.10);
         }
-        button {
+        .pedido-item strong {
+            color: #00e6b0;
+        }
+        .pedido-item button {
             background: #D32F2F;
             color: white;
             border: none;
-            padding: 7px 16px;
-            border-radius: 7px;
-            cursor: pointer;
+            padding: 10px 0;
+            border-radius: 8px;
             font-weight: bold;
-            margin-top: 8px;
+            font-size: 1em;
+            width: 100%;
+            margin-top: 10px;
+            cursor: pointer;
             transition: background 0.2s;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.13);
         }
-        button:hover {
+        .pedido-item button:hover {
             background: #b71c1c;
+        }
+        .pedido-item select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1.5px solid #00e6b0;
+            background: rgba(24, 26, 27, 0.65);
+            color: #f5f5f7;
+            font-size: 1em;
+            margin-top: 8px;
+            margin-bottom: 8px;
+            box-shadow: 0 2px 12px rgba(0,230,176,0.08);
+            outline: none;
+            transition: border 0.2s;
+        }
+        .pedido-item select:focus {
+            border-color: #FFD600;
+        }
+        .pedido-item .actualizar-btn {
+            background: #FFD600;
+            color: #232526;
+            border: none;
+            padding: 10px 0;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 1em;
+            width: 100%;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s, transform 0.15s;
+            box-shadow: 0 2px 12px rgba(255,214,0,0.13);
+        }
+        .pedido-item .actualizar-btn:hover {
+            background: #FFC107;
+            color: #181a1b;
+            transform: scale(1.04);
+        }
+        footer {
+            background: rgba(24, 26, 27, 0.65);
+            backdrop-filter: blur(10px);
+            color: #aaa;
+            text-align: center;
+            padding: 18px 0 10px 0;
+            font-size: 1em;
+            letter-spacing: 1px;
+            margin-top: auto;
+            border-top: 1px solid #222;
+            box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
         }
         @media (max-width: 900px) {
             .container {
@@ -95,22 +162,12 @@
                 padding: 10px;
             }
         }
-        footer {
-            background-color: #2E7D32;
-            color: white;
-            text-align: center;
-            padding: 15px;
-            margin-top: auto;
-            border-radius: 0;
-            font-family: inherit;
-        }
     </style>
 </head>
 <body>
     <nav>
         <div class="nav-left">
-           
-    
+            <!-- Puedes agregar enlaces aquí si lo necesitas -->
         </div>
         <div class="nav-right">
             <a href="{{ url_for('panel_admin') }}">
@@ -128,8 +185,19 @@
                 <div class="pedido-item">
                     <p><strong>ID Pedido:</strong> {{ pedido.id }}</p>
                     <p><strong>Cliente:</strong> {{ pedido.usuario.nombre }}</p>
-                    <p><strong>Estado:</strong> {{ pedido.estado }}</p>
+                    <p><strong>Estado actual:</strong> {{ pedido.estado }}</p>
                     <p><strong>Total:</strong> ${{ pedido.total }}</p>
+                    <form action="{{ url_for('actualizar_estado_pedido', pedido_id=pedido.id) }}" method="post" style="margin-bottom:10px;">
+                        <label for="estado">Actualizar estado:</label>
+                        <select name="estado" id="estado">
+                            <option value="Pendiente" {% if pedido.estado == 'Pendiente' %}selected{% endif %}>Pendiente</option>
+                            <option value="En proceso" {% if pedido.estado == 'En proceso' %}selected{% endif %}>En proceso</option>
+                            <option value="Enviado" {% if pedido.estado == 'Enviado' %}selected{% endif %}>Enviado</option>
+                            <option value="Entregado" {% if pedido.estado == 'Entregado' %}selected{% endif %}>Entregado</option>
+                            <option value="Cancelado" {% if pedido.estado == 'Cancelado' %}selected{% endif %}>Cancelado</option>
+                        </select>
+                        <button type="submit" class="actualizar-btn">Actualizar</button>
+                    </form>
                     <form action="{{ url_for('eliminar_pedido', pedido_id=pedido.id) }}" method="post" style="display:inline;">
                         <button type="submit">
                             Eliminar

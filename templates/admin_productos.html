@@ -3,8 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Supervisión de Productos | AgroConnect</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo8.css') }}">
+    <title>Supervisión de Productos | AgronoMia</title>
+    <style>
+        html, body {
+            height: 100%;
+        }
+        body {
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            color: #f5f5f7;
+            background: url('{{ url_for("static", filename="images/background.jpg") }}') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            flex-direction: column;
+        }
+        nav {
+            background: rgba(24, 26, 27, 0.65);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: 0 32px;
+        }
+        .nav-left, .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        nav a {
+            color: #f5f5f7;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 10px 18px;
+            border-radius: 8px;
+            transition: background 0.2s, color 0.2s;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: 0.5px;
+        }
+        nav a img {
+            height: 28px;
+            width: 28px;
+            vertical-align: middle;
+        }
+        nav a:hover {
+            background: rgba(255,255,255,0.08);
+            color: #00e6b0;
+        }
+        .container {
+            flex: 1 0 auto;
+            max-width: 1400px;
+            margin: 60px auto 40px auto;
+            background: rgba(24, 26, 27, 0.65);
+            backdrop-filter: blur(10px);
+            padding: 32px 60px 30px 60px;
+            border-radius: 18px;
+            box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.25);
+            text-align: center;
+            border: 1.5px solid rgba(0,230,176,0.13);
+        }
+        h2 {
+            color: #00e6b0;
+            margin-bottom: 28px;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.45);
+        }
+        .agregar-producto {
+            margin-bottom: 24px;
+        }
+        .agregar-producto a {
+            background: #232526;
+            color: #00e6b0;
+            font-weight: bold;
+            font-size: 1.1em;
+            padding: 12px 36px;
+            border-radius: 10px;
+            text-decoration: none;
+            border: 1.5px solid #00e6b0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.13);
+            transition: background 0.2s, color 0.2s, transform 0.15s;
+            display: inline-block;
+        }
+        .agregar-producto a:hover {
+            background: #00e6b0;
+            color: #181a1b;
+            transform: scale(1.04);
+        }
+        .producto-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 32px;
+            justify-content: center;
+        }
+        .producto-item {
+            background: rgba(24, 26, 27, 0.82);
+            border-radius: 14px;
+            box-shadow: 0px 4px 18px rgba(0,0,0,0.18);
+            margin-bottom: 22px;
+            padding: 18px 22px;
+            text-align: left;
+            color: #f5f5f7;
+            border: 1px solid rgba(0,230,176,0.10);
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .producto-item img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+        .producto-item p {
+            margin: 6px 0;
+            width: 100%;
+        }
+        .producto-item form,
+        .producto-item a.actualizar-btn {
+            margin-top: 10px;
+            width: 100%;
+        }
+        .producto-item button,
+        .producto-item a.actualizar-btn {
+            background: #232526;
+            color: #00e6b0;
+            font-weight: bold;
+            font-size: 1em;
+            padding: 10px 0;
+            border-radius: 8px;
+            text-decoration: none;
+            border: 1.5px solid #00e6b0;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.13);
+            transition: background 0.2s, color 0.2s, transform 0.15s;
+            display: block;
+            text-align: center;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+        .producto-item button:hover,
+        .producto-item a.actualizar-btn:hover {
+            background: #00e6b0;
+            color: #181a1b;
+            transform: scale(1.04);
+        }
+        footer {
+            background: rgba(24, 26, 27, 0.65);
+            backdrop-filter: blur(10px);
+            color: #aaa;
+            text-align: center;
+            padding: 18px 0 10px 0;
+            font-size: 1em;
+            letter-spacing: 1px;
+            margin-top: auto;
+            border-top: 1px solid #222;
+            box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
+        }
+        @media (max-width: 900px) {
+            .container {
+                padding: 20px 10px;
+            }
+            .producto-list {
+                gap: 16px;
+            }
+            .producto-item {
+                width: 98vw;
+                max-width: 340px;
+            }
+        }
+    </style>
 </head>
 <body>
     <nav>

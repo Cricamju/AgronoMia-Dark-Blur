@@ -1357,6 +1357,18 @@ def editar_productor(productor_id):
     flash("Productor actualizado correctamente.", "success")
     return redirect(url_for('gestionar_productores'))
 
+@app.route('/actualizar_estado_pedido/<int:pedido_id>', methods=['POST'])
+def actualizar_estado_pedido(pedido_id):
+    pedido = Pedido.query.get_or_404(pedido_id)
+    nuevo_estado = request.form.get('estado')
+    if nuevo_estado:
+        pedido.estado = nuevo_estado
+        db.session.commit()
+        flash("Estado del pedido actualizado correctamente.", "success")
+    else:
+        flash("No se recibió un estado válido.", "error")
+    return redirect(url_for('admin_pedidos'))
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()

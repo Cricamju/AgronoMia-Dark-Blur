@@ -21,12 +21,6 @@
         </div>
         <div class="nav-right">
             {% if session['usuario_id'] %}
-                <a href="{{ url_for('carrito') }}">
-                    <img src="{{ url_for('static', filename='images/carrito.png') }}" alt="Carrito">Carrito
-                    {% if cantidad_carrito and cantidad_carrito > 0 %}
-                        <span class="cart-badge">{{ cantidad_carrito }}</span>
-                    {% endif %}
-                </a>
                 <a href="{{ url_for('logout') }}">
                     <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar">Cerrar Sesión
                 </a>

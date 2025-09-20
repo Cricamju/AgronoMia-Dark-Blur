@@ -10,40 +10,53 @@
             padding: 0;
         }
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
             min-height: 100vh;
+            color: #f5f5f7;
+            background: url('{{ url_for("static", filename="images/background.jpg") }}') no-repeat center center fixed;
+            background-size: cover;
             display: flex;
             flex-direction: column;
-            background: url('{{ url_for("static", filename="images/ap5.jpg") }}') no-repeat center center fixed;
-            background-size: cover;
         }
         nav {
-            background-color: #2E7D32;
-            padding: 18px 0;
-            text-align: center;
-            box-shadow: 0px 4px 8px rgba(0,0,0,0.18);
+            background: rgba(24, 26, 27, 0.65);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 70px;
             position: sticky;
             top: 0;
-            z-index: 1000;
+            z-index: 100;
+            padding: 0 32px;
             font-size: 1.5em;
             font-weight: bold;
-            color: white;
+            color: #00e6b0;
             letter-spacing: 1px;
         }
         .container {
+            flex: 1 0 auto;
             max-width: 900px;
-            margin: 40px auto;
-            background: #fff;
-            border-radius: 16px;
-            padding: 35px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+            margin: 60px auto 40px auto;
+            background: rgba(24, 26, 27, 0.65);
+            backdrop-filter: blur(10px);
+            padding: 35px 40px 35px 40px;
+            border-radius: 18px;
+            box-shadow: 0px 8px 32px rgba(0, 0, 0, 0.25);
+            border: 1.5px solid rgba(0,230,176,0.13);
         }
-        h2 { color: #2E7D32; margin-bottom: 28px; }
-        .mensaje-item { 
-            border-bottom: 1px solid #e0e0e0; 
-            padding: 18px 0 16px 0; 
-            display: flex; 
-            align-items: flex-start; 
+        h2 {
+            color: #00e6b0;
+            margin-bottom: 28px;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.45);
+        }
+        .mensaje-item {
+            border-bottom: 1px solid #2e7d32;
+            padding: 18px 0 16px 0;
+            display: flex;
+            align-items: flex-start;
             justify-content: space-between;
             gap: 20px;
         }
@@ -70,29 +83,32 @@
         }
         .eliminar-btn:hover { background: #b71c1c; }
         .responder-btn {
-            background: #2E7D32;
+            background: #00e6b0;
+            color: #181a1b;
             margin-top: 0;
         }
-        .responder-btn:hover { background: #388e3c; }
+        .responder-btn:hover { background: #00b88a; color: #fff; }
         .respuesta-form {
             margin-top: 10px;
-            background: #f1f8e9;
+            background: rgba(24, 26, 27, 0.82);
             padding: 12px 16px;
             border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(46,125,50,0.07);
+            box-shadow: 0 2px 8px rgba(0,230,176,0.07);
         }
         .respuesta-form textarea {
             width: 100%;
             border-radius: 6px;
-            border: 1px solid #2E7D32;
+            border: 1px solid #00e6b0;
             padding: 8px;
             font-size: 1em;
             margin-bottom: 8px;
             resize: vertical;
+            background: rgba(24, 26, 27, 0.65);
+            color: #f5f5f7;
         }
         .respuesta-form button {
             background: #FFD700;
-            color: #2E7D32;
+            color: #232526;
             border: none;
             padding: 6px 18px;
             border-radius: 7px;
@@ -102,35 +118,46 @@
         }
         .respuesta-form button:hover {
             background: #FFC107;
+            color: #181a1b;
         }
         .no-mensajes {
-            color: #2E7D32;
-            background: #f1f8e9;
+            color: #00e6b0;
+            background: rgba(24, 26, 27, 0.65);
             padding: 16px;
             border-radius: 10px;
             font-weight: bold;
             text-align: center;
+            margin-bottom: 20px;
         }
         .volver-btn {
             display: inline-block;
             margin-top: 24px;
-            background: #2E7D32;
-            color: white;
+            background: #232526 no-repeat center center fixed;
+            color: #00e6b0;
             padding: 8px 22px;
             border-radius: 8px;
             text-decoration: none;
             font-weight: bold;
-            transition: background 0.2s;
+            border: 1.5px solid #00e6b0;
+            transition: background 0.2s, color 0.2s;
         }
-        .volver-btn:hover { background: #388e3c; }
+        .volver-btn:hover { background: #00e6b0; color: #181a1b; }
         footer {
-            background-color: #2E7D32;
-            color: white;
+            background: rgba(24, 26, 27, 0.65);
+            backdrop-filter: blur(10px);
+            color: #aaa;
             text-align: center;
-            padding: 15px;
+            padding: 18px 0 10px 0;
+            font-size: 1em;
+            letter-spacing: 1px;
             margin-top: auto;
-            border-radius: 0;
-            font-family: inherit;
+            border-top: 1px solid #222;
+            box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
+        }
+        @media (max-width: 900px) {
+            .container {
+                padding: 20px 10px;
+            }
         }
     </style>
     <script>
@@ -145,8 +172,9 @@
     </script>
 </head>
 <body>
-    <nav>
-        Mensajes AgronoMia
+    <nav style="position: relative;">
+        <span>Mensajes AgronoMia</span>
+        <a href="{{ url_for('panel_admin') }}" class="volver-btn" style="position: absolute; right: 32px; top: 50%; transform: translateY(-50%); margin-top: 0;">Volver al panel</a>
     </nav>
     <div class="container">
         <h2>✉️ Mensajes de Usuarios</h2>
@@ -157,7 +185,7 @@
                         <p><strong>Usuario ID:</strong> {{ mensaje.usuario_id }}</p>
                         <p><strong>Mensaje:</strong> {{ mensaje.mensaje }}</p>
                         {% if mensaje.respuesta %}
-                            <div style="margin-top:8px; background:#e3f2fd; padding:8px 12px; border-radius:7px;">
+                            <div style="margin-top:8px; background:rgba(24, 26, 27, 0.65); padding:8px 12px; border-radius:7px;">
                                 <strong>Respuesta enviada:</strong>
                                 <br>
                                 {{ mensaje.respuesta }}
@@ -179,7 +207,6 @@
         {% else %}
             <div class="no-mensajes">No hay mensajes para mostrar.</div>
         {% endif %}
-        <a href="{{ url_for('panel_admin') }}" class="volver-btn">Volver al panel</a>
     </div>
     <footer>
         <p>© 2025 AgronoMia - Todos los derechos reservados</p>
