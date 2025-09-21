@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Agregar Producto | AgronoMia</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo11.css') }}">
+</head>
+<body>
+    <nav>
+        <div class="nav-left">
+            <a href="{{ url_for('panel_productor') }}">
+                <img src="{{ url_for('static', filename='images/panel.png') }}" alt="Panel Productor">
+                Panel Productor
+            </a>
+            <a href="{{ url_for('admin_productos_productor') }}">
+                <img src="{{ url_for('static', filename='images/pr.png') }}" alt="Mis Productos">
+                Mis Productos
+            </a>
+        </div>
+        <div class="nav-right">
+            <a href="{{ url_for('logout') }}" id="logout-link">
+                <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar Sesión">
+                Cerrar Sesión
+            </a>
+        </div>
+    </nav>
+    <div class="main-content">
+        <div class="container">
+            <h2>🌱 Agregar Nuevo Producto</h2>
+            <form action="{{ url_for('agregar_producto') }}" method="POST" enctype="multipart/form-data">
+                <label for="nombre">Nombre del producto</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Ej: Semillas de Tomate Cherry" required>
+                
+                <label for="descripcion">Descripción</label>
+                <textarea id="descripcion" name="descripcion" placeholder="Describe tu producto..." required></textarea>
+                
+                <label for="precio">Precio ($)</label>
+                <input type="number" id="precio" name="precio" placeholder="Ej: 25.50" step="0.01" min="0" required>
+                
+                <label for="categoria_id">Categoría</label>
+                <select id="categoria_id" name="categoria_id" required>
+                    {% for categoria in categorias %}
+                        <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
+                    {% endfor %}
+                </select>
+                
+                <label for="tiempo_germinacion">Tiempo de Germinación (días)</label>
+                <input type="number" id="tiempo_germinacion" name="tiempo_germinacion" placeholder="Opcional. Ej: 14">
+
+                <label for="epoca_siembra">Época de Siembra</label>
+                <input type="text" id="epoca_siembra" name="epoca_siembra" placeholder="Opcional. Ej: Primavera">
+
+                <label for="cantidad_semillas">Cantidad de Semillas (aprox.)</label>
+                <input type="number" id="cantidad_semillas" name="cantidad_semillas" placeholder="Opcional. Ej: 50">
+
+                <label for="imagen">Imagen del producto</label>
+                <input type="file" id="imagen" name="imagen" accept="image/*" required>
+                
+                <button type="submit">Agregar Producto</button>
+            </form>
+            <a class="volver" href="{{ url_for('admin_productos_productor') }}">← Volver a Mis Productos</a>
+        </div>
+    </div>
+    <footer>
+        <p>© 2025 AgronoMia - Todos los derechos reservados</p>
+    </footer>
+</body>
+</html>

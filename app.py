@@ -820,7 +820,7 @@ def agregar_producto():
 
     productor_id = session.get('productor_id')
     if not productor_id:
-        flash("No se encontró el productor asociado a este usuario.", "error")
+        flash("✖ No se encontró el productor asociado a este usuario.", "error")
         return redirect(url_for('admin_productos_productor'))
 
     nombre = request.form['nombre']
@@ -828,6 +828,11 @@ def agregar_producto():
     precio = float(request.form['precio'])
     categoria_id = int(request.form['categoria_id'])
     imagen = request.files['imagen']
+
+    # Campos de semillas (maneja si están vacíos)
+    tiempo_germinacion = request.form.get('tiempo_germinacion')
+    epoca_siembra = request.form.get('epoca_siembra')
+    cantidad_semillas = request.form.get('cantidad_semillas')
 
     filename = None
     if imagen and allowed_file(imagen.filename):
@@ -840,11 +845,14 @@ def agregar_producto():
         precio=precio,
         categoria_id=categoria_id,
         imagen=filename,
-        productor_id=productor_id  
+        productor_id=productor_id,
+        tiempo_germinacion=int(tiempo_germinacion) if tiempo_germinacion else None,
+        epoca_siembra=epoca_siembra if epoca_siembra else None,
+        cantidad_semillas=int(cantidad_semillas) if cantidad_semillas else None
     )
     db.session.add(nuevo_producto)
     db.session.commit()
-    flash("Producto agregado correctamente", "success") 
+    flash("✔ Producto agregado correctamente", "success") 
     return redirect(url_for('admin_productos_productor'))
 
 
@@ -1080,6 +1088,15 @@ def eliminar_pedido(pedido_id):
     flash("Pedido eliminado correctamente.", "success")
     return redirect(url_for('admin_pedidos'))
 
+
+@app.route('/agregar_producto_productor', methods=['GET'])
+def agregar_producto_productor():
+    if 'usuario_id' not in session or session.get('tipo_usuario') != 'Productor':
+        flash("✖ Acceso no autorizado.", "error")
+        return redirect(url_for('login'))
+    
+    categorias = Categoria.query.all()
+    return render_template('agregar_producto_productor.html', categorias=categorias)
 
 
 @app.route('/agregar_producto_admin', methods=['GET', 'POST'])
