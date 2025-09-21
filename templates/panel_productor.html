@@ -77,6 +77,15 @@
                     </div>
                     <button class="btn-blur" onclick="window.location.href='{{ url_for('pedidos_productor') }}'">Ver Pedidos</button>
                 </div>
+
+                <div class="panel-card">
+                    <span class="panel-card-icon">🛒</span>
+                    <div class="panel-card-content">
+                        <h3>Mercado</h3>
+                        <p>Explora los productos disponibles en la plataforma.</p>
+                    </div>
+                    <button class="btn-blur" onclick="window.location.href='{{ url_for('productos') }}'">Ver Mercado</button>
+                </div>
                 <div class="panel-card">
                     <span class="panel-card-icon">✉️</span>
                     <div class="panel-card-content">
@@ -84,15 +93,6 @@
                         <p>Revisa y responde los mensajes que te han enviado.</p>
                     </div>
                     <button class="btn-blur" onclick="window.location.href='{{ url_for('bandeja_mensajes_productor') }}'">Ver Bandeja</button>
-                </div>
-                <!-- Botón de Mercado agregado -->
-                <div class="panel-card">
-                    <span class="panel-card-icon">🛒</span>
-                    <div class="panel-card-content">
-                        <h3>Mercado</h3>
-                        <p>Explora productos de otros productores.</p>
-                    </div>
-                    <button class="btn-blur" onclick="window.location.href='{{ url_for('productos') }}'">Ver Productos</button>
                 </div>
                 <div class="panel-card">
                 <span class="panel-card-icon">👤</span>
@@ -108,43 +108,7 @@
     <footer>
         <p>© 2025 AgronoMia - Todos los derechos reservados</p>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        const ventasLabels = {{ ventas_labels|tojson }};
-        const ventasData = {{ ventas_data|tojson }};
-        const ctx = document.getElementById('ventasChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ventasLabels,
-                datasets: [{
-                    label: 'Ventas ($)',
-                    data: ventasData,
-                    backgroundColor: 'rgba(0, 230, 176, 0.7)',
-                    borderColor: 'rgba(0, 230, 176, 1)',
-                    borderWidth: 2,
-                    borderRadius: 6,
-                    maxBarThickness: 38
-                }]
-            },
-            options: {
-                responsive: false,
-                plugins: {
-                    legend: { display: false },
-                    title: { display: false }
-                },
-                scales: {
-                    x: {
-                        grid: { display: false }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: '#eee' }
-                    }
-                }
-            }
-        });
-    </script>
+
     <div id="logout-modal-bg">
         <div id="logout-modal">
             <h2>¿Cerrar sesión?</h2>
@@ -256,19 +220,6 @@ function showToastBlur(msg, type="success") {
     setTimeout(() => { toast.style.display = 'none'; }, 3000);
 }
 </script>
-
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <script>
-      window.onload = function() {
-        {% for category, message in messages %}
-          showToastBlur("{{ message }}", "{{ 'success' if category=='success' else 'error' }}");
-        {% endfor %}
-      }
-    </script>
-  {% endif %}
-{% endwith %}
-
 <div id="confirmar-modal-bg"
      style="display:none;position:fixed;z-index:3000;left:0;top:0;right:0;bottom:0;width:100vw;height:100vh;
             background:rgba(24,26,27,0.55);backdrop-filter:blur(10px);

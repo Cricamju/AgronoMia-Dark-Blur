@@ -20,33 +20,38 @@
             </a>
         </div>
         <div class="nav-right">
-            {% if session['usuario_id'] %}
+            {% if tipo_usuario == 'Productor' %}
+                <a href="{{ url_for('perfil_productor') }}">
+                    <img src="{{ url_for('static', filename='images/perfil.png') }}" alt="Mi Cuenta">Mi Cuenta
+                </a>
+                <a href="#" id="logout-link">
+                    <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar">Cerrar Sesión
+                </a>
+            {% elif tipo_usuario == 'Cliente' %}
                 <a href="{{ url_for('carrito') }}">
                     <img src="{{ url_for('static', filename='images/carrito.png') }}" alt="Carrito">Carrito
                     {% if cantidad_carrito and cantidad_carrito > 0 %}
-                        <span style="background:#FFD700;color:#2E7D32;padding:2px 8px;border-radius:12px;font-weight:bold;margin-left:4px;">
-                            {{ cantidad_carrito }}
-                        </span>
+                        <span class="cart-badge">{{ cantidad_carrito }}</span>
                     {% endif %}
                 </a>
                 <a href="{{ url_for('panel_cliente') }}">
                     <img src="{{ url_for('static', filename='images/perfil.png') }}" alt="Mi Cuenta">Mi Cuenta
                 </a>
-                <a href="{{ url_for('logout') }}">
-                <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar">Cerrar Sesión
-            </a>
-        {% else %}
-            <a href="{{ url_for('login') }}">
-                <img src="{{ url_for('static', filename='images/iniciarsesion.png') }}" alt="Iniciar Sesión">Iniciar Sesión
-            </a>
-        {% endif %}
-    </div>
+                <a href="#" id="logout-link">
+                    <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar">Cerrar Sesión
+                </a>
+            {% else %}
+                <a href="{{ url_for('login') }}">
+                    <img src="{{ url_for('static', filename='images/iniciarsesion.png') }}" alt="Iniciar Sesión">Iniciar Sesión
+                </a>
+            {% endif %}
+        </div>
     </nav>
 
     <div id="logout-modal-bg">
         <div id="logout-modal">
             <h2>¿Cerrar sesión?</h2>
-            <p>¿Estás seguro de que deseas cerrar tu sesión?<br>Puedes continuar navegando si lo prefieres.</p>
+            <p>¿Estás seguro de que deseas cerrar tu sesión?</p>
             <div class="modal-btns">
                 <form id="logout-form" action="{{ url_for('logout') }}" method="get" style="display:inline;">
                     <button type="submit" class="modal-btn confirm">Sí, cerrar sesión</button>
@@ -62,10 +67,12 @@
             {% if productores %}
                 {% for productor in productores %}
                     <div class="productor-item">
-                        <img src="static/images/ProductorCampoValle.jpg" alt="{{ productor.nombre }}">
-                        <p>📍 {{ productor.ubicacion or 'Ubicación no disponible' }}</p>
-                        <p>{{ productor.descripcion or 'Sin descripción.' }}</p>
-                        <iframe src="{{ productor.ubicacion_mapa or '' }}" width="300" height="200" style="border:0;" allowfullscreen></iframe>
+                        <img src="{{ url_for('static', filename='images/' + productor.imagen if productor.imagen else 'images/default.png') }}" alt="{{ productor.nombre }}">
+                        <div>
+                            <h4>{{ productor.nombre }}</h4>
+                            <p>📍 {{ productor.ubicacion or 'Ubicación no disponible' }}</p>
+                            <p>{{ productor.descripcion or 'Sin descripción.' }}</p>
+                        </div>
                     </div>
                 {% endfor %}
             {% else %}
@@ -79,18 +86,6 @@
     </footer>
 
     <script>
-        function mostrarDetalles(productorId) {
-            const detalle = document.getElementById(`detalle-${productorId}`);
-            const boton = document.getElementById(`btn-${productorId}`);
-            if (detalle.style.display === "none") {
-                detalle.style.display = "block";
-                boton.textContent = "Ver menos";
-            } else {
-                detalle.style.display = "none";
-                boton.textContent = "Ver más";
-            }
-        }
-
         function abrirLogoutModal() {
             document.getElementById('logout-modal-bg').classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -100,13 +95,13 @@
             document.body.style.overflow = '';
         }
         document.addEventListener('DOMContentLoaded', function() {
-            const logoutLinks = Array.from(document.querySelectorAll('a[href="{{ url_for("logout") }}"]'));
-            logoutLinks.forEach(function(logoutLink) {
+            const logoutLink = document.getElementById('logout-link');
+            if(logoutLink) {
                 logoutLink.addEventListener('click', function(e) {
                     e.preventDefault();
                     abrirLogoutModal();
                 });
-            });
+            }
             document.addEventListener('keydown', function(e) {
                 if (e.key === "Escape") cerrarLogoutModal();
             });

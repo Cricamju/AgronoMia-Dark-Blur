@@ -20,13 +20,23 @@
             </a>
         </div>
         <div class="nav-right">
-            <a href="{{ url_for('carrito') }}">
-                <img src="{{ url_for('static', filename='images/carrito.png') }}" alt="Carrito">Carrito
-                {% if session['usuario_nombre'] and cantidad_carrito and cantidad_carrito > 0 %}
-                    <span class="cart-badge">{{ cantidad_carrito }}</span>
-                {% endif %}
-            </a>
-            {% if session['usuario_nombre'] %}
+            {% if session.tipo_usuario == 'Productor' %}
+                <a href="{{ url_for('panel_productor') }}">
+                    <img src="{{ url_for('static', filename='images/panel.png') }}" alt="Panel Productor">Panel Productor
+                </a>
+                <a href="{{ url_for('perfil_productor') }}">
+                    <img src="{{ url_for('static', filename='images/perfil.png') }}" alt="Mi Cuenta">Mi Cuenta
+                </a>
+                <a href="#" id="logout-link">
+                    <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar">Cerrar Sesión
+                </a>
+            {% elif session.tipo_usuario == 'Cliente' %}
+                <a href="{{ url_for('carrito') }}">
+                    <img src="{{ url_for('static', filename='images/carrito.png') }}" alt="Carrito">Carrito
+                    {% if cantidad_carrito and cantidad_carrito > 0 %}
+                        <span class="cart-badge">{{ cantidad_carrito }}</span>
+                    {% endif %}
+                </a>
                 <a href="{{ url_for('panel_cliente') }}">
                     <img src="{{ url_for('static', filename='images/perfil.png') }}" alt="Mi Cuenta">Mi Cuenta
                 </a>
@@ -92,7 +102,7 @@
     <div id="logout-modal-bg">
         <div id="logout-modal">
             <h2>¿Cerrar sesión?</h2>
-            <p>¿Estás seguro de que deseas cerrar tu sesión?<br>Puedes continuar navegando si lo prefieres.</p>
+            <p>¿Estás seguro de que deseas cerrar tu sesión?</p>
             <div class="modal-btns">
                 <form id="logout-form" action="{{ url_for('logout') }}" method="get" style="display:inline;">
                     <button type="submit" class="modal-btn confirm">Sí, cerrar sesión</button>

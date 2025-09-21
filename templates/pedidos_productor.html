@@ -31,26 +31,6 @@
         </div>
     </nav>
 
-    <!-- ALERTA FLASH Y TOAST BLUR -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% for category, message in messages %}
-        {% if "entregado" in message|lower %}
-          <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const toast = document.getElementById('toast-blur');
-                if (toast) {
-                    toast.textContent = "✅ Pedido entregado con éxito";
-                    toast.style.display = 'block';
-                    setTimeout(() => { toast.style.display = 'none'; }, 3000);
-                }
-            });
-          </script>
-        {% endif %}
-      {% endfor %}
-    {% endwith %}
-    <div id="toast-blur"></div>
-    <div id="toast-blur-left"></div>
-
     <div class="container">
         <h2><span class="emoji">📦</span> Pedidos Recibidos</h2>
         {% if pedidos %}
@@ -59,14 +39,16 @@
                 <p><strong>Pedido #{{ pedido.id }}</strong></p>
                 <p><strong>Cliente:</strong> {{ pedido.cliente_nombre }}</p>
                 <p><strong>Fecha:</strong> {{ pedido.fecha.strftime('%d/%m/%Y %H:%M') }}</p>
-                <p><strong>Total:</strong> ${{ pedido.total }}</p>
-                <p><strong>Productos:</strong> {{ pedido.productos_resumen }}</p>
+                <p><strong>Total de mis productos:</strong> ${{ "%.2f"|format(pedido.total_para_productor) }}</p>
+                <p><strong>Mis productos en este pedido:</strong> {{ pedido.productos_resumen }}</p>
                 <p><strong>Dirección de entrega:</strong> {{ pedido.direccion_entrega }}</p>
                 <button class="btn-entregado" data-pedido="{{ pedido.id }}">✅ Marcar como Entregado</button>
             </div>
             {% endfor %}
         {% else %}
-            <p>No hay pedidos pendientes.</p>
+            <div class="pedido" style="text-align: center;">
+                <p>🎉 ¡Felicidades! No tienes pedidos pendientes por entregar.</p>
+            </div>
         {% endif %}
     </div>
     <footer>
@@ -86,7 +68,6 @@
         </div>
     </div>
 
-
     <div id="logout-modal-bg">
         <div id="logout-modal">
             <h2>¿Cerrar sesión?</h2>
@@ -100,87 +81,65 @@
         </div>
     </div>
 
-    <div id="toast-blur"></div>
     <script>
-    function showToastBlur(msg) {
-        const toast = document.getElementById('toast-blur');
-        toast.textContent = msg;
-        toast.style.display = 'block';
-        setTimeout(() => { toast.style.display = 'none'; }, 3000);
-    }
-    function showToastBlurLeft(msg) {
-        const toast = document.getElementById('toast-blur-left');
-        toast.textContent = msg;
-        toast.style.display = 'block';
-        setTimeout(() => { toast.style.display = 'none'; }, 3000);
-    }
-    document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function() {
+            let pedidoIdSeleccionado = null;
 
-        document.querySelectorAll('.toast-success').forEach(alert => {
-            if (alert.textContent.toLowerCase().includes('entregado')) {
-                showToastBlur('✅ Pedido marcado como entregado');
-            }
-        });
-    });
-
-    let pedidoIdSeleccionado = null;
-    document.querySelectorAll('.btn-entregado').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.preventDefault();
-            pedidoIdSeleccionado = this.getAttribute('data-pedido');
-            abrirEntregadoModal();
-        });
-    });
-
-    function abrirEntregadoModal() {
-        document.getElementById('entregado-modal-bg').classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-    function cerrarEntregadoModal() {
-        document.getElementById('entregado-modal-bg').classList.remove('active');
-        document.body.style.overflow = '';
-    }
-
-    document.getElementById('entregado-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        if (pedidoIdSeleccionado) {
-            window.location.href = "{{ url_for('marcar_entregado', pedido_id=0) }}".replace('0', pedidoIdSeleccionado);
-        }
-    });
-
-    function abrirLogoutModal() {
-        document.getElementById('logout-modal-bg').classList.add('active');
-        document.body.style.overflow = 'hidden';
-    }
-    function cerrarLogoutModal() {
-        document.getElementById('logout-modal-bg').classList.remove('active');
-        document.body.style.overflow = '';
-    }
-    document.addEventListener('DOMContentLoaded', function() {
-        const logoutLink = document.getElementById('logout-link');
-        if (logoutLink) {
-            logoutLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                abrirLogoutModal();
+            document.querySelectorAll('.btn-entregado').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    pedidoIdSeleccionado = this.getAttribute('data-pedido');
+                    abrirEntregadoModal();
+                });
             });
-        }
-        document.addEventListener('keydown', function(e) {
-            if (e.key === "Escape") cerrarLogoutModal();
+
+            function abrirEntregadoModal() {
+                document.getElementById('entregado-modal-bg').classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function cerrarEntregadoModal() {
+                document.getElementById('entregado-modal-bg').classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            document.getElementById('entregado-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (pedidoIdSeleccionado) {
+                    window.location.href = "{{ url_for('marcar_entregado', pedido_id=0) }}".replace('0', pedidoIdSeleccionado);
+                }
+            });
+
+            function abrirLogoutModal() {
+                document.getElementById('logout-modal-bg').classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function cerrarLogoutModal() {
+                document.getElementById('logout-modal-bg').classList.remove('active');
+                document.body.style.overflow = '';
+            }
+            
+            const logoutLink = document.getElementById('logout-link');
+            if (logoutLink) {
+                logoutLink.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    abrirLogoutModal();
+                });
+            }
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === "Escape") {
+                    cerrarLogoutModal();
+                    cerrarEntregadoModal();
+                }
+            });
+
+            setTimeout(() => {
+              const toast = document.getElementById('toast-container');
+              if (toast) toast.remove();
+            }, 3000);
         });
-        setTimeout(() => {
-          const toast = document.getElementById('toast-container');
-          if (toast) toast.remove();
-        }, 3000);
-    });
-    document.addEventListener('DOMContentLoaded', function() {
-        {% with messages = get_flashed_messages(with_categories=true) %}
-          {% for category, message in messages %}
-            {% if "entregado" in message|lower %}
-                showToastBlurLeft('✅ Pedido entregado con éxito');
-            {% endif %}
-          {% endfor %}
-        {% endwith %}
-    });
     </script>
 </body>
 </html>

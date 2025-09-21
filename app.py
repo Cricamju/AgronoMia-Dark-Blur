@@ -223,8 +223,17 @@ def enviar_mensaje():
 @app.route('/productores')
 def productores():
     lista_productores = Productor.query.filter_by(publicado=True).all()
-    return render_template('productores.html', productores=lista_productores)
-
+    
+    # Identificar el tipo de usuario y obtener la cantidad del carrito si es cliente
+    tipo_usuario = session.get('tipo_usuario', None)
+    cantidad_carrito = 0
+    if tipo_usuario == 'Cliente' and 'usuario_id' in session:
+        cantidad_carrito = db.session.query(db.func.sum(Carrito.cantidad)).filter_by(usuario_id=session['usuario_id']).scalar() or 0
+        
+    return render_template('productores.html', 
+                           productores=lista_productores, 
+                           tipo_usuario=tipo_usuario, 
+                           cantidad_carrito=cantidad_carrito)
 
 @app.route('/registro', methods=['GET', 'POST'])
 def registro():
@@ -683,15 +692,42 @@ def registrar_productor():
 
 @app.route('/pedidos_productor')
 def pedidos_productor():
-    pedidos = Pedido.query.filter_by(estado="Pendiente").all()
-    for pedido in pedidos:
-        pedido.cliente_nombre = pedido.usuario.nombre if hasattr(pedido, 'usuario') else 'Cliente'
-        pedido.productos_resumen = ', '.join([f"{item.producto.nombre} (x{item.cantidad})" for item in pedido.items])
-        
-        direccion = Direccion.query.filter_by(usuario_id=pedido.usuario_id).first()
-        pedido.direccion_entrega = direccion.direccion if direccion else "No registrada"
-    return render_template('pedidos_productor.html', pedidos=pedidos)
+    # 1. Verificar que el productor haya iniciado sesión
+    if 'productor_id' not in session:
+        flash("Inicie sesión como productor para ver sus pedidos.", "error")
+        return redirect(url_for('login'))
 
+    productor_id = session.get('productor_id')
+
+    # 2. Consultar solo pedidos pendientes que contengan productos de este productor
+    pedidos_query = db.session.query(Pedido).join(PedidoItem).join(Producto).filter(
+        Producto.productor_id == productor_id,
+        Pedido.estado == "Pendiente"
+    ).distinct().order_by(Pedido.fecha.desc()).all()
+
+    pedidos_filtrados = []
+    for pedido in pedidos_query:
+        # 3. Para cada pedido, calcular el resumen y total SOLO de sus productos
+        items_del_productor = []
+        total_para_productor = 0
+        
+        for item in pedido.items:
+            # Comprobar si el producto en el item del pedido es del productor actual
+            if item.producto.productor_id == productor_id:
+                items_del_productor.append(f"{item.producto.nombre} (x{item.cantidad})")
+                total_para_productor += item.producto.precio * item.cantidad
+        
+        # 4. Añadir la información procesada a la lista que se enviará a la plantilla
+        if items_del_productor:
+            pedido.cliente_nombre = pedido.usuario.nombre if pedido.usuario else 'Cliente Desconocido'
+            direccion = Direccion.query.filter_by(usuario_id=pedido.usuario_id).first()
+            pedido.direccion_entrega = direccion.direccion if direccion else "No registrada"
+            
+            pedido.productos_resumen = ', '.join(items_del_productor)
+            pedido.total_para_productor = total_para_productor # Nuevo atributo con el total específico
+            pedidos_filtrados.append(pedido)
+
+    return render_template('pedidos_productor.html', pedidos=pedidos_filtrados)
 
 
 def obtener_cantidad_carrito(usuario_id):

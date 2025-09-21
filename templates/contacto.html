@@ -161,7 +161,6 @@
             box-shadow: 0 -4px 24px rgba(0,0,0,0.18);
         }
 
-        /* MODAL DE CIERRE DE SESIÓN */
 #logout-modal-bg {
     display: none;
     position: fixed;
@@ -242,31 +241,50 @@
 <body>
 
     <nav>
-    <div class="nav-left">
-        <a href="{{ url_for('inicio') }}">
-            <img src="{{ url_for('static', filename='images/inicio.png') }}" alt="Inicio">Inicio
-        </a>
-        <a href="{{ url_for('productos') }}">
-            <img src="{{ url_for('static', filename='images/mercado.png') }}" alt="Mercado">Mercado
-        </a>
-        <a href="{{ url_for('productores') }}">
-            <img src="{{ url_for('static', filename='images/productor.png') }}" alt="Productores">Productores
-        </a>
-    </div>
-    <div class="nav-right">
-        <a href="{{ url_for('carrito') }}">
-            <img src="{{ url_for('static', filename='images/carrito.png') }}" alt="Carrito">Carrito
-            {% if cantidad_carrito is defined and cantidad_carrito > 0 %}
-                <span style="background:#00e6b0;color:#181a1b;font-weight:bold;padding:2px 10px;border-radius:12px;margin-left:6px;">
-                    {{ cantidad_carrito }}
-                </span>
+        <div class="nav-left">
+            <a href="{{ url_for('inicio') }}">
+                <img src="{{ url_for('static', filename='images/inicio.png') }}" alt="Inicio">Inicio
+            </a>
+            <a href="{{ url_for('productos') }}">
+                <img src="{{ url_for('static', filename='images/mercado.png') }}" alt="Mercado">Mercado
+            </a>
+            <a href="{{ url_for('productores') }}">
+                <img src="{{ url_for('static', filename='images/productor.png') }}" alt="Productores">Productores
+            </a>
+        </div>
+        <div class="nav-right">
+            {% if session.tipo_usuario == 'Productor' %}
+                <a href="{{ url_for('panel_productor') }}">
+                    <img src="{{ url_for('static', filename='images/panel.png') }}" alt="Panel Productor">Panel Productor
+                </a>
+                <a href="{{ url_for('perfil_productor') }}">
+                    <img src="{{ url_for('static', filename='images/perfil.png') }}" alt="Mi Cuenta">Mi Cuenta
+                </a>
+                <a href="#" id="logout-link">
+                    <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar">Cerrar Sesión
+                </a>
+            {% elif session.tipo_usuario == 'Cliente' %}
+                <a href="{{ url_for('carrito') }}">
+                    <img src="{{ url_for('static', filename='images/carrito.png') }}" alt="Carrito">Carrito
+                    {% if cantidad_carrito and cantidad_carrito > 0 %}
+                        <span style="background:#00e6b0;color:#181a1b;font-weight:bold;padding:2px 10px;border-radius:12px;margin-left:6px;">
+                            {{ cantidad_carrito }}
+                        </span>
+                    {% endif %}
+                </a>
+                <a href="{{ url_for('panel_cliente') }}">
+                    <img src="{{ url_for('static', filename='images/perfil.png') }}" alt="Mi Cuenta">Mi Cuenta
+                </a>
+                <a href="#" id="logout-link">
+                    <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar">Cerrar Sesión
+                </a>
+            {% else %}
+                <a href="{{ url_for('login') }}">
+                    <img src="{{ url_for('static', filename='images/iniciarsesion.png') }}" alt="Iniciar Sesión">Iniciar Sesión
+                </a>
             {% endif %}
-        </a>
-        <a href="{{ url_for('panel_cliente') }}">
-            <img src="{{ url_for('static', filename='images/perfil.png') }}" alt="Mi perfil">Mi Cuenta
-        </a>
-    </div>
-</nav>
+        </div>
+    </nav>
 
     <div class="container">
         <h2 style="font-size: 2.2em; margin-bottom: 18px; font-weight: 800; letter-spacing: 1px;">
@@ -302,5 +320,8 @@
         <p>© 2025 AgronoMia - Todos los derechos reservados</p>
     </footer>
 
+    <script>
+        // Script para el modal de cierre de sesión
+    </script>
 </body>
 </html>

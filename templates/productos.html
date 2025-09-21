@@ -329,9 +329,13 @@
                 <a href="{{ url_for('panel_admin') }}">
                     <img src="{{ url_for('static', filename='images/admin.png') }}" alt="Panel Admin">Panel Admin
                 </a>
+
             {% elif tipo_usuario == 'Productor' %}
                 <a href="{{ url_for('panel_productor') }}">
                     <img src="{{ url_for('static', filename='images/panel.png') }}" alt="Panel Productor">Panel Productor
+                </a>
+                <a href="{{ url_for('perfil_productor') }}">
+                    <img src="{{ url_for('static', filename='images/perfil.png') }}" alt="Mi Cuenta">Mi Cuenta
                 </a>
             {% endif %}
 
