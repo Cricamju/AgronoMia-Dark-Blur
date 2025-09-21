@@ -2,15 +2,19 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Actualizar Producto | AgronoMia</title>
-     <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo11.css') }}">
+    <title>Actualizar Producto (Admin) | AgronoMia</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo11.css') }}">
 </head>
 <body>
     <nav>
         <div class="nav-left">
-            <a href="{{ url_for('panel_productor') }}">
-                <img src="{{ url_for('static', filename='images/inicio.png') }}" alt="Panel Productor">
-                Panel Productor
+            <a href="{{ url_for('panel_admin') }}">
+                <img src="{{ url_for('static', filename='images/panel.png') }}" alt="Panel Admin">
+                Panel Admin
+            </a>
+            <a href="{{ url_for('admin_productos') }}">
+                <img src="{{ url_for('static', filename='images/pr.png') }}" alt="Supervisión Productos">
+                Supervisión Productos
             </a>
         </div>
         <div class="nav-right">
@@ -22,7 +26,7 @@
     </nav>
     <div class="main-content">
         <div class="container">
-            <h2>Actualizar Producto</h2>
+            <h2>✏️ Actualizar Producto (Admin)</h2>
             <form action="" method="POST" enctype="multipart/form-data">
                 <label for="nombre">Nombre del producto</label>
                 <input type="text" id="nombre" name="nombre" value="{{ producto.nombre }}" required>
@@ -39,7 +43,23 @@
                         <option value="{{ categoria.id }}" {% if categoria.id == producto.categoria_id %}selected{% endif %}>{{ categoria.nombre }}</option>
                     {% endfor %}
                 </select>
+
+                <label for="productor_id">Productor</label>
+                <select id="productor_id" name="productor_id" required>
+                    {% for productor in productores %}
+                        <option value="{{ productor.id }}" {% if productor.id == producto.productor_id %}selected{% endif %}>{{ productor.nombre }}</option>
+                    {% endfor %}
+                </select>
                 
+                <label for="tiempo_germinacion">Tiempo de Germinación (días)</label>
+                <input type="number" id="tiempo_germinacion" name="tiempo_germinacion" value="{{ producto.tiempo_germinacion or '' }}" placeholder="Ej: 14">
+
+                <label for="epoca_siembra">Época de Siembra</label>
+                <input type="text" id="epoca_siembra" name="epoca_siembra" value="{{ producto.epoca_siembra or '' }}" placeholder="Ej: Primavera">
+
+                <label for="cantidad_semillas">Cantidad de Semillas (aprox.)</label>
+                <input type="number" id="cantidad_semillas" name="cantidad_semillas" value="{{ producto.cantidad_semillas or '' }}" placeholder="Ej: 50">
+
                 <div class="imagen-actual">
                     <label>Imagen actual:</label><br>
                     {% if producto.imagen %}
@@ -48,51 +68,16 @@
                         <span>No hay imagen</span>
                     {% endif %}
                 </div>
-                <label for="imagen">Nueva imagen</label>
+                <label for="imagen">Cambiar imagen (opcional)</label>
                 <input type="file" id="imagen" name="imagen" accept="image/*">
-                <button type="submit">Actualizar</button>
+                
+                <button type="submit">Actualizar Producto</button>
             </form>
-            <a class="volver" href="{{ url_for('admin_productos_productor') }}">← Volver a Mis Productos</a>
+            <a class="volver" href="{{ url_for('admin_productos') }}">← Volver a Supervisión</a>
         </div>
     </div>
     <footer>
         <p>© 2025 AgronoMia - Todos los derechos reservados</p>
     </footer>
-
-    <div id="logout-modal-bg" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(24,26,27,0.75);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;">
-        <div id="logout-modal" style="background:rgba(24,26,27,0.98);border-radius:18px;box-shadow:0 8px 32px rgba(0,230,176,0.13);padding:38px 32px 28px 32px;max-width:340px;width:90vw;text-align:center;position:relative;">
-            <h2 style="color:#00e6b0;margin-bottom:18px;">¿Cerrar sesión?</h2>
-            <p style="color:#eee;margin-bottom:24px;">¿Estás seguro de que deseas cerrar tu sesión?<br>Puedes continuar navegando si lo prefieres.</p>
-            <div style="display:flex;gap:16px;justify-content:center;">
-                <form id="logout-form" action="{{ url_for('logout') }}" method="get" style="display:inline;">
-                    <button type="submit" class="modal-btn confirm" style="background:linear-gradient(90deg,#00e6b0 0%,#00b88a 100%);color:#181a1b;font-weight:600;border:none;border-radius:8px;padding:12px 18px;font-size:1em;box-shadow:0 2px 10px rgba(0,230,176,0.10);transition:background 0.2s,color 0.2s,transform 0.15s;cursor:pointer;">Sí, cerrar sesión</button>
-                </form>
-                <button class="modal-btn cancel" onclick="cerrarLogoutModal()" style="background:#222;color:#eee;font-weight:600;border:none;border-radius:8px;padding:12px 18px;font-size:1em;box-shadow:0 2px 10px rgba(0,230,176,0.10);transition:background 0.2s,color 0.2s,transform 0.15s;cursor:pointer;">Cancelar</button>
-            </div>
-        </div>
-    </div>
-    <script>
-    function abrirLogoutModal() {
-        document.getElementById('logout-modal-bg').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }
-    function cerrarLogoutModal() {
-        document.getElementById('logout-modal-bg').style.display = 'none';
-        document.body.style.overflow = '';
-    }
-    document.addEventListener('DOMContentLoaded', function() {
-        const logoutLink = document.getElementById('logout-link');
-        if (logoutLink) {
-            logoutLink.addEventListener('click', function(e) {
-                e.preventDefault();
-                abrirLogoutModal();
-            });
-        }
-        // Cerrar modal con ESC
-        document.addEventListener('keydown', function(e) {
-            if (e.key === "Escape") cerrarLogoutModal();
-        });
-    });
-    </script>
 </body>
 </html>

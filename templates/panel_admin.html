@@ -15,10 +15,7 @@
             <a href="{{ url_for('productos') }}">
                 <img src="{{ url_for('static', filename='images/mercado.png') }}" alt="Mercado">Mercado
             </a>
-            <a href="{{ url_for('contacto') }}">
-                <img src="{{ url_for('static', filename='images/contacto.png') }}" alt="Contacto">Contacto
-            </a>
-        </div>
+            </div>
         <div class="nav-right">
             {% if session['usuario_id'] %}
                 <a href="{{ url_for('logout') }}">

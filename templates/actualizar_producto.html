@@ -2,218 +2,75 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Actualizar Producto | AgroConnect</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: url('{{ url_for("static", filename="images/verduras.jpg") }}') no-repeat center center fixed;
-            background-size: cover;
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        nav {
-            background-color: #2E7D32;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        .nav-left, .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 25px;
-        }
-        nav a {
-            color: white;
-            text-decoration: none;
-            font-weight: bold;
-            padding: 12px 18px;
-            border-radius: 8px;
-            transition: all 0.3s;
-            font-size: 1em;
-            font-family: inherit;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        nav a img {
-            height: 32px;
-            width: 32px;
-            vertical-align: middle;
-        }
-        nav a:hover {
-            background: rgba(255, 255, 255, 0.3);
-            color: #FFD700;
-        }
-        .container {
-            max-width: 420px;
-            width: 100%;
-            margin: 120px auto 40px auto;
-            background: rgba(255,255,255,0.97);
-            border-radius: 16px;
-            box-shadow: 0 4px 18px rgba(46,125,50,0.18);
-            padding: 36px 32px 28px 32px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        h2 {
-            color: #2E7D32;
-            margin-bottom: 28px;
-            text-align: center;
-        }
-        form {
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        form input, form textarea {
-            width: 90%;
-            padding: 12px;
-            margin-bottom: 18px;
-            border: 1.5px solid #2E7D32;
-            border-radius: 8px;
-            font-size: 1em;
-            background: #f9f9f9;
-            transition: border 0.2s;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        form textarea {
-            resize: vertical;
-            min-height: 60px;
-        }
-        form input:focus, form textarea:focus {
-            border-color: #FFD700;
-            outline: none;
-        }
-        .imagen-actual {
-            margin-bottom: 18px;
-            text-align: center;
-        }
-        .imagen-actual img {
-            max-width: 120px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(46,125,50,0.08);
-        }
-        form button {
-            background: #FFD700;
-            color: #2E7D32;
-            font-weight: bold;
-            border: none;
-            padding: 13px 0;
-            width: 90%;
-            border-radius: 8px;
-            font-size: 1.1em;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s;
-            margin-top: 8px;
-            margin-left: auto;
-            margin-right: auto;
-            display: block;
-        }
-        form button:hover {
-            background: #FFC107;
-            color: #1B5E20;
-        }
-        .volver {
-            display: block;
-            margin: 18px auto 0 auto;
-            color: #2E7D32;
-            text-decoration: none;
-            font-weight: bold;
-            text-align: center;
-            transition: color 0.2s;
-        }
-        .volver:hover {
-            color: #FFD700;
-            text-decoration: underline;
-        }
-        footer {
-            background-color: #2E7D32;
-            color: white;
-            text-align: center;
-            padding: 18px 0;
-            width: 100%;
-            position: fixed;
-            left: 0;
-            bottom: 0;
-            z-index: 999;
-            font-size: 1em;
-        }
-        @media (max-width: 600px) {
-            nav {
-                flex-direction: column;
-                height: auto;
-                padding: 10px 5px;
-            }
-            .nav-left, .nav-right {
-                flex-direction: column;
-                gap: 10px;
-            }
-            .container {
-                max-width: 98vw;
-                padding: 12px 4vw 18px 4vw;
-                margin-top: 120px;
-                margin-bottom: 80px;
-            }
-            form input, form textarea, form button {
-                width: 100%;
-            }
-        }
-    </style>
+    <title>Actualizar Mi Producto | AgronoMia</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/estilo11.css') }}">
 </head>
 <body>
     <nav>
-    <div class="nav-left">
-        <a href="{{ url_for('admin_productos') }}">
-            <img src="{{ url_for('static', filename='images/pr.png') }}" alt="Productos"> Supervisión Productos
-        </a>
-        <a href="{{ url_for('admin_pedidos') }}">
-            <img src="{{ url_for('static', filename='images/misp.png') }}" alt="Pedidos">Pedidos
-        </a>
-       
-    </div>
-    <div class="nav-right">
-        <a href="{{ url_for('panel_admin') }}">
-            <img src="{{ url_for('static', filename='images/perfil.png') }}" alt="Mi Cuenta">Mi Cuenta
-        </a>
-        <a href="{{ url_for('logout') }}">
-            <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar Sesión">Cerrar Sesión
-        </a>
-    </div>
-</nav>
-    <div class="container">
-        <h2>Actualizar Producto</h2>
-        <form method="POST" enctype="multipart/form-data">
-            <input type="text" name="nombre" value="{{ producto.nombre }}" required>
-            <textarea name="descripcion" required>{{ producto.descripcion }}</textarea>
-            <input type="number" name="precio" value="{{ producto.precio }}" step="0.01" required>
-            <div class="imagen-actual">
-                <label>Imagen actual:</label><br>
-                {% if producto.imagen %}
-                    <img src="{{ url_for('static', filename='images/' + producto.imagen) }}" alt="Imagen actual">
-                {% else %}
-                    <span>No hay imagen</span>
-                {% endif %}
-            </div>
-            <input type="file" name="imagen" accept="image/*">
-            <button type="submit">Actualizar</button>
-        </form>
-        <a class="volver" href="{{ url_for('admin_productos') }}">← Volver</a>
-    </div>
+        <div class="nav-left">
+            <a href="{{ url_for('panel_productor') }}">
+                <img src="{{ url_for('static', filename='images/panel.png') }}" alt="Panel Productor">
+                Panel Productor
+            </a>
+            <a href="{{ url_for('admin_productos_productor') }}">
+                <img src="{{ url_for('static', filename='images/pr.png') }}" alt="Mis Productos">
+                Mis Productos
+            </a>
+        </div>
+        <div class="nav-right">
+            <a href="{{ url_for('logout') }}" id="logout-link">
+                <img src="{{ url_for('static', filename='images/cerrar.png') }}" alt="Cerrar Sesión">
+                Cerrar Sesión
+            </a>
+        </div>
+    </nav>
+    <div class="main-content">
+        <div class="container">
+            <h2>✏️ Actualizar Mi Producto</h2>
+            <form action="" method="POST" enctype="multipart/form-data">
+                <label for="nombre">Nombre del producto</label>
+                <input type="text" id="nombre" name="nombre" value="{{ producto.nombre }}" required>
+                
+                <label for="descripcion">Descripción</label>
+                <textarea id="descripcion" name="descripcion" required>{{ producto.descripcion }}</textarea>
+                
+                <label for="precio">Precio</label>
+                <input type="number" id="precio" name="precio" value="{{ producto.precio }}" step="0.01" min="0" required>
+                
+                <label for="categoria_id">Categoría</label>
+                <select id="categoria_id" name="categoria_id" required>
+                    {% for categoria in categorias %}
+                        <option value="{{ categoria.id }}" {% if categoria.id == producto.categoria_id %}selected{% endif %}>{{ categoria.nombre }}</option>
+                    {% endfor %}
+                </select>
+                
+                <label for="tiempo_germinacion">Tiempo de Germinación (días)</label>
+                <input type="number" id="tiempo_germinacion" name="tiempo_germinacion" value="{{ producto.tiempo_germinacion or '' }}" placeholder="Opcional. Ej: 14">
 
+                <label for="epoca_siembra">Época de Siembra</label>
+                <input type="text" id="epoca_siembra" name="epoca_siembra" value="{{ producto.epoca_siembra or '' }}" placeholder="Opcional. Ej: Primavera">
 
- <footer style="position:static; margin-top:40px;">
-    <p>© 2025 AgronoMia - Todos los derechos reservados</p>
-</footer>
+                <label for="cantidad_semillas">Cantidad de Semillas (aprox.)</label>
+                <input type="number" id="cantidad_semillas" name="cantidad_semillas" value="{{ producto.cantidad_semillas or '' }}" placeholder="Opcional. Ej: 50">
+
+                <div class="imagen-actual">
+                    <label>Imagen actual:</label><br>
+                    {% if producto.imagen %}
+                        <img src="{{ url_for('static', filename='images/' + producto.imagen) }}" alt="Imagen actual">
+                    {% else %}
+                        <span>No hay imagen</span>
+                    {% endif %}
+                </div>
+                <label for="imagen">Cambiar imagen (opcional)</label>
+                <input type="file" id="imagen" name="imagen" accept="image/*">
+                
+                <button type="submit">Actualizar Producto</button>
+            </form>
+            <a class="volver" href="{{ url_for('admin_productos_productor') }}">← Volver a Mis Productos</a>
+        </div>
+    </div>
+    <footer>
+        <p>© 2025 AgronoMia - Todos los derechos reservados</p>
+    </footer>
 </body>
 </html>

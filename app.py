@@ -974,22 +974,38 @@ def eliminar_producto(producto_id):
 
 @app.route('/actualizar_producto/<int:producto_id>', methods=['GET', 'POST'])
 def actualizar_producto(producto_id):
+    # --- Vista para el Productor ---
     producto = Producto.query.get_or_404(producto_id)
+    # Valida que el producto pertenezca al productor en sesión
+    if 'productor_id' not in session or producto.productor_id != session['productor_id']:
+        flash("✖ No tienes permiso para editar este producto.", "error")
+        return redirect(url_for('admin_productos_productor'))
+
     categorias = Categoria.query.all()
     if request.method == 'POST':
+        # Actualización de datos básicos
         producto.nombre = request.form['nombre']
         producto.descripcion = request.form['descripcion']
         producto.precio = float(request.form['precio'])
         producto.categoria_id = int(request.form['categoria_id'])
-        imagen = request.files['imagen']
+
+        # Actualización de los nuevos campos para semillas
+        producto.tiempo_germinacion = int(request.form.get('tiempo_germinacion')) if request.form.get('tiempo_germinacion') else None
+        producto.epoca_siembra = request.form.get('epoca_siembra') if request.form.get('epoca_siembra') else None
+        producto.cantidad_semillas = int(request.form.get('cantidad_semillas')) if request.form.get('cantidad_semillas') else None
+
+        # Manejo de la imagen
+        imagen = request.files.get('imagen')
         if imagen and allowed_file(imagen.filename):
             filename = secure_filename(imagen.filename)
             imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             producto.imagen = filename
+            
         db.session.commit()
-        flash("Producto actualizado correctamente.", "success")
+        flash("✔ Producto actualizado correctamente.", "success")
         return redirect(url_for('admin_productos_productor'))
-    return render_template('actualizar_producto.html', producto=producto, categorias=categorias)
+        
+    return render_template('actualizar_producto_productor.html', producto=producto, categorias=categorias)
 
 
 
@@ -1077,17 +1093,28 @@ def agregar_producto_admin():
         imagen = request.files['imagen']
         productor_id = int(request.form['productor_id'])
         categoria_id = int(request.form['categoria_id'])
+        
+        # Nuevos campos para semillas (maneja valores vacíos)
+        tiempo_germinacion = request.form.get('tiempo_germinacion')
+        epoca_siembra = request.form.get('epoca_siembra')
+        cantidad_semillas = request.form.get('cantidad_semillas')
+
         filename = None
         if imagen and allowed_file(imagen.filename):
             filename = secure_filename(imagen.filename)
             imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        
         nuevo_producto = Producto(
             nombre=nombre,
             descripcion=descripcion,
             precio=precio,
             imagen=filename,
             productor_id=productor_id,
-            categoria_id=categoria_id
+            categoria_id=categoria_id,
+            # Asignación de nuevos campos
+            tiempo_germinacion=int(tiempo_germinacion) if tiempo_germinacion else None,
+            epoca_siembra=epoca_siembra if epoca_siembra else None,
+            cantidad_semillas=int(cantidad_semillas) if cantidad_semillas else None
         )
         db.session.add(nuevo_producto)
         db.session.commit()
@@ -1098,20 +1125,35 @@ def agregar_producto_admin():
 
 @app.route('/actualizar_producto_admin/<int:producto_id>', methods=['GET', 'POST'])
 def actualizar_producto_admin(producto_id):
+    # --- Vista para el Administrador ---
     producto = Producto.query.get_or_404(producto_id)
+    productores = Productor.query.all()
+    categorias = Categoria.query.all()
     if request.method == 'POST':
+        # Actualización de datos básicos
         producto.nombre = request.form['nombre']
         producto.descripcion = request.form['descripcion']
         producto.precio = float(request.form['precio'])
-        imagen = request.files['imagen']
+        producto.productor_id = int(request.form['productor_id'])
+        producto.categoria_id = int(request.form['categoria_id'])
+
+        # Actualización de los nuevos campos para semillas (maneja valores vacíos)
+        producto.tiempo_germinacion = int(request.form.get('tiempo_germinacion')) if request.form.get('tiempo_germinacion') else None
+        producto.epoca_siembra = request.form.get('epoca_siembra') if request.form.get('epoca_siembra') else None
+        producto.cantidad_semillas = int(request.form.get('cantidad_semillas')) if request.form.get('cantidad_semillas') else None
+        
+        # Manejo de la imagen
+        imagen = request.files.get('imagen')
         if imagen and allowed_file(imagen.filename):
             filename = secure_filename(imagen.filename)
             imagen.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             producto.imagen = filename
+            
         db.session.commit()
-        flash("Producto actualizado correctamente.", "success")
+        flash("✔ Producto actualizado correctamente.", "success")
         return redirect(url_for('admin_productos'))
-    return render_template('actualizar_producto_admin.html', producto=producto)
+        
+    return render_template('actualizar_producto_admin.html', producto=producto, productores=productores, categorias=categorias)
 
 
 @app.route('/eliminar_producto_admin/<int:producto_id>', methods=['POST'])
